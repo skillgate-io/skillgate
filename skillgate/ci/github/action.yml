@@ -1,0 +1,150 @@
+name: "SkillGate Scan"
+description: "Scan agent skills for security risks and enforce policy"
+author: "SkillGate"
+
+branding:
+  icon: "shield"
+  color: "blue"
+
+inputs:
+  path:
+    description: "Path to the skill bundle directory"
+    required: true
+  policy:
+    description: "Policy preset (development, staging, production, strict) or path to policy YAML"
+    required: false
+    default: "production"
+  enforce:
+    description: "Enable enforcement mode (fail on policy violation)"
+    required: false
+    default: "true"
+  output:
+    description: "Output format: human, json, sarif"
+    required: false
+    default: "sarif"
+  upload-sarif:
+    description: "Upload SARIF to GitHub Security tab"
+    required: false
+    default: "true"
+  python-version:
+    description: "Python version to use"
+    required: false
+    default: "3.12"
+  skillgate-version:
+    description: "SkillGate version to install (default: latest)"
+    required: false
+    default: ""
+  annotations:
+    description: "Generate PR annotations for findings"
+    required: false
+    default: "true"
+  runtime-command:
+    description: "Optional agent CLI command executed only through skillgate run wrapper"
+    required: false
+    default: ""
+
+outputs:
+  risk-score:
+    description: "Numeric risk score (0-200)"
+    value: ${{ steps.scan.outputs.risk_score }}
+  passed:
+    description: "Whether the policy check passed (true/false)"
+    value: ${{ steps.scan.outputs.passed }}
+  findings-count:
+    description: "Number of findings detected"
+    value: ${{ steps.scan.outputs.findings_count }}
+  sarif-file:
+    description: "Path to the generated SARIF file"
+    value: ${{ steps.scan.outputs.sarif_file }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install SkillGate
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.skillgate-version }}" ]; then
+          pip install "skillgate==${{ inputs.skillgate-version }}"
+        else
+          pip install skillgate
+        fi
+
+    - name: Run SkillGate scan
+      id: scan
+      shell: bash
+      run: |
+        SARIF_FILE="${{ runner.temp }}/skillgate-results.sarif"
+        JSON_FILE="${{ runner.temp }}/skillgate-results.json"
+
+        # Run JSON scan for metadata extraction
+        skillgate scan "${{ inputs.path }}" \
+          --output json \
+          --policy "${{ inputs.policy }}" \
+          > "$JSON_FILE" 2>/dev/null || true
+
+        # Extract metadata from JSON
+        if [ -f "$JSON_FILE" ]; then
+          RISK_SCORE=$(python3 -c "import json; d=json.load(open('$JSON_FILE')); print(d['risk_score']['total'])" 2>/dev/null || echo "0")
+          FINDINGS_COUNT=$(python3 -c "import json; d=json.load(open('$JSON_FILE')); print(len(d['findings']))" 2>/dev/null || echo "0")
+          PASSED=$(python3 -c "import json; d=json.load(open('$JSON_FILE')); p=d.get('policy'); print('true' if p is None or p.get('passed', True) else 'false')" 2>/dev/null || echo "true")
+        else
+          RISK_SCORE=0
+          FINDINGS_COUNT=0
+          PASSED=true
+        fi
+
+        echo "risk_score=$RISK_SCORE" >> "$GITHUB_OUTPUT"
+        echo "findings_count=$FINDINGS_COUNT" >> "$GITHUB_OUTPUT"
+        echo "passed=$PASSED" >> "$GITHUB_OUTPUT"
+        echo "sarif_file=$SARIF_FILE" >> "$GITHUB_OUTPUT"
+
+        # Run SARIF scan
+        skillgate scan "${{ inputs.path }}" \
+          --output sarif \
+          --policy "${{ inputs.policy }}" \
+          > "$SARIF_FILE" 2>/dev/null || true
+
+        # Run enforce scan for exit code
+        if [ "${{ inputs.enforce }}" = "true" ]; then
+          SKILLGATE_CI_MODE=1 skillgate scan "${{ inputs.path }}" \
+            --enforce \
+            --policy "${{ inputs.policy }}" \
+            --quiet
+        fi
+
+        # Wrapper-only runtime execution for agent CLIs (optional hook).
+        if [ -n "${{ inputs.runtime-command }}" ]; then
+          sh -c "skillgate run --env ci -- ${{ inputs.runtime-command }}"
+        fi
+
+    - name: Generate PR annotations
+      if: inputs.annotations == 'true' && github.event_name == 'pull_request'
+      shell: bash
+      run: |
+        JSON_FILE="${{ runner.temp }}/skillgate-results.json"
+        if [ -f "$JSON_FILE" ]; then
+          python3 -c "
+        import json, sys
+        data = json.load(open('$JSON_FILE'))
+        for f in data.get('findings', []):
+            level = 'error' if f.get('severity') in ('critical', 'high') else 'warning'
+            file_path = f.get('file', '')
+            line = f.get('line', 1)
+            msg = f.get('message', 'Security finding detected')
+            rule_id = f.get('rule_id', '')
+            print(f'::{level} file=${{ inputs.path }}/{file_path},line={line}::[{rule_id}] {msg}')
+        "
+        fi
+
+    - name: Upload SARIF to GitHub Security tab
+      if: inputs.upload-sarif == 'true' && always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ steps.scan.outputs.sarif_file }}
+        category: skillgate
+      continue-on-error: true

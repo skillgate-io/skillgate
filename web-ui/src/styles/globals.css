@@ -1,0 +1,159 @@
+/* 16.13: Critical CSS — loaded first, minimal paint-blocking styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 16.18: Reduced motion support — disable animations for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 16.18: High contrast support */
+@media (prefers-contrast: high) {
+  :root {
+    --border-color: #000000;
+  }
+
+  .card {
+    border: 2px solid var(--border-color);
+  }
+}
+
+/* Base typography */
+@layer base {
+  html {
+    @apply text-surface-900 antialiased;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-surface-0 font-sans;
+  }
+
+  /* 16.18: Focus visible styles for keyboard navigation */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-500 rounded-sm;
+  }
+
+  /* Remove default focus outline for mouse users */
+  *:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl font-bold tracking-tight;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl font-semibold;
+  }
+}
+
+/* 16.18: Skip to content link for screen readers */
+.skip-link {
+  @apply fixed left-1/2 top-3 z-[100] -translate-x-1/2 -translate-y-16 rounded-full border border-brand-300/60 bg-brand-700 px-4 py-2 text-sm font-semibold text-white opacity-0 shadow-lg;
+  @apply transition-all duration-200 focus:translate-y-0 focus:opacity-100 focus:outline-none;
+}
+
+#main-content {
+  scroll-margin-top: 96px;
+}
+
+/* 16.13: Font display swap for web fonts */
+@font-face {
+  font-family: 'Inter';
+  font-display: swap;
+  src: local('Inter');
+}
+
+/* Docs reading system */
+article[data-docs-content] p {
+  @apply leading-7 text-surface-300;
+}
+
+article[data-docs-content] a {
+  @apply text-emerald-300 underline-offset-4 transition;
+}
+
+article[data-docs-content] a:hover {
+  @apply text-emerald-200 underline;
+}
+
+article[data-docs-content] ul,
+article[data-docs-content] ol {
+  @apply space-y-2;
+}
+
+article[data-docs-content] li {
+  @apply text-surface-300;
+}
+
+article[data-docs-content] code {
+  @apply rounded bg-[#0f1b30] px-1.5 py-0.5 text-surface-100;
+}
+
+article[data-docs-content] table {
+  @apply w-full border-collapse overflow-hidden rounded-xl border border-white/10;
+}
+
+article[data-docs-content] thead {
+  @apply bg-white/[0.04];
+}
+
+article[data-docs-content] th,
+article[data-docs-content] td {
+  @apply px-4 py-3 text-left text-sm;
+}
+
+article[data-docs-content] tbody tr {
+  @apply border-t border-white/10;
+}
+
+/* === Threat Tear Hero Animation === */
+
+@keyframes sg-tear-open {
+  0%   { clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); }
+  55%  {
+    clip-path: polygon(
+      0% 0%, 100% 0%, 100% 72%,
+      92% 76%, 82% 70%, 72% 78%, 62% 71%, 52% 79%,
+      42% 72%, 32% 80%, 22% 73%, 12% 81%, 4% 75%, 0% 78%
+    );
+  }
+  100% {
+    clip-path: polygon(
+      0% 0%, 100% 0%, 100% 62%,
+      90% 67%, 80% 61%, 70% 69%, 60% 62%, 50% 70%,
+      40% 63%, 30% 71%, 20% 64%, 10% 72%, 2% 66%, 0% 68%
+    );
+  }
+}
+
+@keyframes sg-threat-scroll {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
+}
+
+@keyframes sg-shield-rise {
+  0%   { opacity: 0; transform: scale(0.86) translateY(10px); }
+  100% { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
+@keyframes sg-debris-fly {
+  0%   { opacity: 1; transform: translate(0, 0) rotate(0deg); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); }
+}
+
+@keyframes sg-glow-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1);    }
+  50%       { opacity: 1;   transform: scale(1.12); }
+}

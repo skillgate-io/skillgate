@@ -1,0 +1,75 @@
+# SkillGate Bitbucket Pipelines Template
+#
+# Usage: Include this in your bitbucket-pipelines.yml:
+#
+#   pipelines:
+#     default:
+#       - step:
+#           name: SkillGate Security Scan
+#           image: python:3.12-slim
+#           script:
+#             - pip install skillgate
+#             - skillgate scan . --policy production --enforce
+#           artifacts:
+#             - skillgate-report.json
+#             - skillgate-report.sarif
+#
+# Or use the full template below for maximum integration:
+
+definitions:
+  steps:
+    - step: &skillgate-scan
+        name: "SkillGate Security Scan"
+        image: python:3.12-slim
+        script:
+          - |
+            # Install SkillGate
+            if [ -n "$SKILLGATE_VERSION" ]; then
+              pip install "skillgate==$SKILLGATE_VERSION" --quiet
+            else
+              pip install skillgate --quiet
+            fi
+          - |
+            # Set defaults
+            SKILLGATE_PATH="${SKILLGATE_PATH:-.}"
+            SKILLGATE_POLICY="${SKILLGATE_POLICY:-production}"
+            SKILLGATE_ENFORCE="${SKILLGATE_ENFORCE:-true}"
+            SKILLGATE_AGENT_COMMAND="${SKILLGATE_AGENT_COMMAND:-}"
+
+            # Run scan with JSON output for artifact
+            skillgate scan "$SKILLGATE_PATH" \
+              --output json \
+              --policy "$SKILLGATE_POLICY" \
+              --report-file skillgate-report.json || true
+
+            # Run SARIF scan for code quality report
+            skillgate scan "$SKILLGATE_PATH" \
+              --output sarif \
+              --policy "$SKILLGATE_POLICY" \
+              > skillgate-report.sarif 2>/dev/null || true
+
+            # Run enforce scan for exit code
+            if [ "$SKILLGATE_ENFORCE" = "true" ]; then
+              skillgate scan "$SKILLGATE_PATH" \
+                --enforce \
+                --policy "$SKILLGATE_POLICY"
+            else
+              skillgate scan "$SKILLGATE_PATH" \
+                --policy "$SKILLGATE_POLICY"
+            fi
+
+            # Wrapper-only runtime execution for agent CLIs (optional hook)
+            if [ -n "$SKILLGATE_AGENT_COMMAND" ]; then
+              sh -c "skillgate run --env ci -- $SKILLGATE_AGENT_COMMAND"
+            fi
+        artifacts:
+          - skillgate-report.json
+          - skillgate-report.sarif
+
+pipelines:
+  pull-requests:
+    "**":
+      - step: *skillgate-scan
+  branches:
+    main:
+      - step: *skillgate-scan

@@ -1,0 +1,22 @@
+{
+  "defaults": {
+    "standard": "WCAG2AA",
+    "timeout": 30000,
+    "wait": 800,
+    "chromeLaunchConfig": {
+      "args": [
+        "--no-sandbox",
+        "--disable-dev-shm-usage"
+      ]
+    }
+  },
+  "urls": [
+    "http://localhost:3000/",
+    "http://localhost:3000/features",
+    "http://localhost:3000/pricing",
+    "http://localhost:3000/docs",
+    "http://localhost:3000/contact",
+    "http://localhost:3000/privacy",
+    "http://localhost:3000/terms"
+  ]
+}

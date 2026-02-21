@@ -1,0 +1,24 @@
+{
+  "name": "@skillgate/cli",
+  "version": "1.0.0",
+  "description": "Optional npm/npx wrapper for SkillGate CLI (Python core runtime)",
+  "license": "UNLICENSED",
+  "private": false,
+  "bin": {
+    "skillgate": "bin/skillgate.js"
+  },
+  "files": [
+    "bin/skillgate.js",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "skillgate",
+    "security",
+    "cli",
+    "governance",
+    "agent-security"
+  ]
+}

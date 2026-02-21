@@ -1,0 +1,65 @@
+{
+  "version": "1",
+  "canonical_channel": "pipx",
+  "version_contract": {
+    "latest": "Highest available released version from release manifest.",
+    "stable": "Current stable release version from release manifest (falls back to latest if unset).",
+    "pinned": "Exact immutable semver value provided by operator."
+  },
+  "version_targets": {
+    "latest": "1.0.0",
+    "stable": "1.0.0"
+  },
+  "channels": {
+    "pipx": {
+      "tier": "ga",
+      "platforms": ["macos", "linux", "windows", "wsl"],
+      "install_latest": "pipx install skillgate",
+      "install_stable": "pipx install skillgate",
+      "install_pinned": "pipx install skillgate=={version}",
+      "verify": "skillgate version",
+      "uninstall": "pipx uninstall skillgate",
+      "upgrade": "pipx upgrade skillgate"
+    },
+    "pypi": {
+      "tier": "ga",
+      "platforms": ["macos", "linux", "windows", "wsl"],
+      "install_latest": "python -m pip install --upgrade skillgate",
+      "install_stable": "python -m pip install --upgrade skillgate",
+      "install_pinned": "python -m pip install --upgrade skillgate=={version}",
+      "verify": "skillgate version",
+      "uninstall": "python -m pip uninstall -y skillgate",
+      "upgrade": "python -m pip install --upgrade skillgate"
+    },
+    "homebrew": {
+      "tier": "beta",
+      "platforms": ["macos"],
+      "install_latest": "brew install skillgate",
+      "install_stable": "brew install skillgate",
+      "install_pinned": "brew install skillgate@{version}",
+      "verify": "skillgate version",
+      "uninstall": "brew uninstall skillgate",
+      "upgrade": "brew upgrade skillgate"
+    },
+    "winget": {
+      "tier": "beta",
+      "platforms": ["windows"],
+      "install_latest": "winget install SkillGate.SkillGate",
+      "install_stable": "winget install SkillGate.SkillGate",
+      "install_pinned": "winget install SkillGate.SkillGate --version {version}",
+      "verify": "skillgate version",
+      "uninstall": "winget uninstall SkillGate.SkillGate",
+      "upgrade": "winget upgrade SkillGate.SkillGate"
+    },
+    "npm_shim": {
+      "tier": "experimental",
+      "platforms": ["macos", "linux", "windows", "wsl"],
+      "install_latest": "npm install -g @skillgate/cli",
+      "install_stable": "npm install -g @skillgate/cli",
+      "install_pinned": "npm install -g @skillgate/cli@{version}",
+      "verify": "skillgate version",
+      "uninstall": "npm uninstall -g @skillgate/cli",
+      "upgrade": "npm install -g @skillgate/cli@latest"
+    }
+  }
+}

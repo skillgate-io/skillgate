@@ -1,0 +1,55 @@
+import type { MarketingRoadmapResponse } from '@/lib/api-client';
+
+export const ROADMAP_FALLBACK: MarketingRoadmapResponse = {
+  version: '2026.02.21',
+  updated_at: '2026-02-21T00:00:00Z',
+  category: 'Governance + Enforcement + Evidence',
+  posture: 'Fallback snapshot: deterministic control-plane roadmap aligned to current delivery priorities.',
+  items: [
+    {
+      id: 'rm-001',
+      title: 'Governed proof pack export',
+      status: 'live',
+      reason: 'Signed evidence exports are active for enterprise audit and procurement workflows.',
+      target_tier: 'team',
+      proof_surface: '/docs/enterprise/procurement',
+      implementation_task: '17.153',
+    },
+    {
+      id: 'rm-002',
+      title: 'Governance-before-autonomy gate',
+      status: 'live',
+      reason: 'Autonomous actions remain blocked unless governance and approval gates are satisfied.',
+      target_tier: 'enterprise',
+      proof_surface: '/docs/governance',
+      implementation_task: '17.157',
+    },
+    {
+      id: 'rm-003',
+      title: 'Canonical finding schema v1',
+      status: 'in_progress',
+      reason: 'Cross-engine output normalization is being hardened for stable reporting contracts.',
+      target_tier: 'multi-tier',
+      proof_surface: '/docs/product',
+      implementation_task: '17.161',
+    },
+    {
+      id: 'rm-004',
+      title: 'Deterministic risk model versioning',
+      status: 'in_progress',
+      reason: 'Scoring inputs and model versions are being locked for reproducible decisions.',
+      target_tier: 'multi-tier',
+      proof_surface: '/docs/security',
+      implementation_task: '17.162',
+    },
+    {
+      id: 'rm-005',
+      title: 'Open-core split readiness report',
+      status: 'planned',
+      reason: 'Repo split proceeds only after CI export enforcement and deployment cutover rehearsal evidence.',
+      target_tier: 'enterprise',
+      proof_surface: '/docs/enterprise/deployment',
+      implementation_task: '17.172',
+    },
+  ],
+};

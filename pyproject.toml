@@ -1,0 +1,173 @@
+[build-system]
+requires = ["setuptools>=68.0", "setuptools-scm>=8.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "skillgate"
+dynamic = ["version"]
+description = "CLI-first CI/CD policy enforcement tool that scans agent skills for security risks"
+readme = "README.md"
+license = {text = "Proprietary"}
+requires-python = ">=3.10,<3.14"
+authors = [{name = "SkillGate Team"}]
+keywords = ["security", "agent", "skill", "ci", "policy", "static-analysis", "sarif"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+    "Topic :: Software Development :: Quality Assurance",
+    "Typing :: Typed",
+]
+dependencies = [
+    "typer>=0.9.0",
+    "rich>=13.0.0",
+    "pydantic>=2.0.0",
+    "pyyaml>=6.0",
+    "pynacl>=1.5.0",
+    "httpx>=0.25.0",
+]
+
+[project.urls]
+Homepage = "https://skillgate.io"
+Documentation = "https://skillgate.io/docs"
+Repository = "https://github.com/skillgate/skillgate"
+Changelog = "https://github.com/skillgate/skillgate/blob/main/CHANGELOG.md"
+Issues = "https://github.com/skillgate/skillgate/issues"
+
+[project.optional-dependencies]
+watch = [
+    "watchdog>=4.0.0",
+]
+docs = [
+    "pypdf>=4.0.0",
+    "python-docx>=1.1.0",
+]
+ast = [
+    "tree-sitter>=0.22.0",
+    "tree-sitter-python>=0.23.0",
+    "tree-sitter-javascript>=0.23.0",
+    "tree-sitter-typescript>=0.23.0",
+    "tree-sitter-go>=0.23.0",
+    "tree-sitter-rust>=0.23.0",
+    "tree-sitter-ruby>=0.23.0",
+    "tree-sitter-bash>=0.23.0",
+]
+api = [
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.27.0",
+    "PyJWT[crypto]>=2.8.0",
+    "stripe>=8.0.0",
+    "sqlalchemy>=2.0.0",
+    "greenlet>=3.0.0",
+    "aiosqlite>=0.20.0",
+    "alembic>=1.13.0",
+    "asyncpg>=0.29.0",
+    "psycopg[binary]>=3.1.0",
+    "redis>=5.0.0",
+    "httpx>=0.27.0",
+]
+worker = [
+    "arq>=0.26.0",
+]
+otel = [
+    "opentelemetry-api>=1.20.0",
+    "opentelemetry-sdk>=1.20.0",
+    "opentelemetry-exporter-otlp-proto-grpc>=1.20.0",
+    "opentelemetry-instrumentation-fastapi>=0.41b0",
+]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-xdist>=3.3.0",
+    "ruff>=0.4.0",
+    "mypy>=1.8.0",
+    "setuptools-scm>=8.0",
+    "types-PyYAML>=6.0",
+]
+
+[project.scripts]
+skillgate = "skillgate.cli.app:main"
+
+[tool.setuptools.packages.find]
+include = ["skillgate*"]
+
+[tool.setuptools.dynamic]
+version = {attr = "skillgate.version.__version__"}
+
+[tool.setuptools.package-data]
+skillgate = ["assets/*.ansi"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "SIM"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = ["tree_sitter", "tree_sitter.*", "tree_sitter_python", "tree_sitter_javascript", "tree_sitter_typescript", "tree_sitter_go", "tree_sitter_rust", "tree_sitter_ruby", "tree_sitter_bash", "watchdog", "watchdog.*", "anthropic", "anthropic.*", "openai", "openai.*", "fastapi", "fastapi.*", "uvicorn", "uvicorn.*", "jose", "jose.*", "stripe", "stripe.*", "sqlalchemy", "sqlalchemy.*", "aiosqlite", "aiosqlite.*", "alembic", "alembic.*", "asyncpg", "asyncpg.*", "psycopg", "psycopg.*", "opentelemetry", "opentelemetry.*", "nacl", "nacl.*", "google", "google.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+disallow_untyped_decorators = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short -m 'not slow'"
+markers = [
+    "slow: marks tests as slow (SLO tests, excluded from default run)",
+]
+
+[tool.coverage.run]
+source = ["skillgate"]
+branch = true
+omit = [
+    "skillgate/api/*.py",
+    "skillgate/api/**/*.py",
+    "skillgate/__main__.py",
+    "skillgate/cli/main.py",
+    "skillgate/cli/branding.py",
+    "skillgate/cli/commands/*.py",
+    "skillgate/cli/commands/auth.py",
+    "skillgate/cli/commands/scan.py",
+    "skillgate/cli/commands/simulate.py",
+    "skillgate/cli/commands/retroscan.py",
+    "skillgate/cli/commands/hunt.py",
+    "skillgate/config/entitlement.py",
+    "skillgate/core/parser/archive.py",
+    "skillgate/core/parser/document.py",
+    "skillgate/api/telemetry.py",
+    "skillgate/api/routes/retroscan.py",
+    "skillgate/api/entitlement_teams.py",
+    "skillgate/api/routes/audit.py",
+]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 90
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.",
+    "if TYPE_CHECKING:",
+]

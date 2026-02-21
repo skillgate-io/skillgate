@@ -1,0 +1,91 @@
+{
+  "contract_version": "1",
+  "release_sequence": [
+    {
+      "id": "ce_validate",
+      "required_files": [
+        "CHANGELOG.md",
+        "docs/open-core/public-export-policy.json"
+      ],
+      "required_ci_jobs": [
+        "public-export-gate"
+      ],
+      "state_checks": [
+        "ce_tag_present",
+        "ce_changelog_matches_tag",
+        "public_export_gate_passed"
+      ]
+    },
+    {
+      "id": "ee_validate",
+      "required_files": [
+        "docs/open-core/ci-parity-matrix.json"
+      ],
+      "required_ci_jobs": [
+        "split-ci-parity"
+      ],
+      "state_checks": [
+        "ee_tag_present",
+        "ce_ee_compatibility_matrix_verified"
+      ]
+    },
+    {
+      "id": "npm_publish",
+      "required_files": [
+        "npm-shim/package.json",
+        ".github/workflows/npm-shim-release.yml"
+      ],
+      "required_ci_jobs": [
+        "npm-shim"
+      ],
+      "state_checks": [
+        "npm_shim_version_matches_ce_release",
+        "npm_shim_provenance_generated"
+      ]
+    },
+    {
+      "id": "web_deploy",
+      "required_files": [
+        "web-ui/package.json",
+        "docs/install-spec.json"
+      ],
+      "required_ci_jobs": [
+        "web-ui"
+      ],
+      "state_checks": [
+        "web_version_pointers_synced",
+        "web_deploy_completed"
+      ]
+    }
+  ],
+  "rollback_sequence": [
+    {
+      "id": "web_deploy",
+      "state_checks": [
+        "web_version_pointer_rollback_applied",
+        "web_healthcheck_passed"
+      ]
+    },
+    {
+      "id": "npm_publish",
+      "state_checks": [
+        "npm_shim_dist_tag_rollback_verified",
+        "npm_shim_wrapper_runtime_smoke_passed"
+      ]
+    },
+    {
+      "id": "ee_validate",
+      "state_checks": [
+        "ee_rollback_tag_validated",
+        "ce_ee_compatibility_matrix_rechecked"
+      ]
+    },
+    {
+      "id": "ce_validate",
+      "state_checks": [
+        "ce_rollback_tag_validated",
+        "public_export_gate_revalidated"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "description": "Gate parity contract between monorepo CI and planned public/private split repos.",
+  "required_gates": [
+    {
+      "id": "lint",
+      "monorepo_job": "lint",
+      "public_repo_contract": "ruff check . && ruff format --check .",
+      "private_repo_contract": "ruff check . && ruff format --check ."
+    },
+    {
+      "id": "typecheck",
+      "monorepo_job": "typecheck",
+      "public_repo_contract": "mypy --strict skillgate/",
+      "private_repo_contract": "mypy --strict skillgate/"
+    },
+    {
+      "id": "tests",
+      "monorepo_job": "test",
+      "public_repo_contract": "pytest",
+      "private_repo_contract": "pytest"
+    },
+    {
+      "id": "security",
+      "monorepo_job": "security",
+      "public_repo_contract": "pip-audit + detect-secrets",
+      "private_repo_contract": "pip-audit + detect-secrets"
+    },
+    {
+      "id": "public_export",
+      "monorepo_job": "public-export-gate",
+      "public_repo_contract": "python scripts/release/check_public_export.py --strict",
+      "private_repo_contract": "not-applicable"
+    }
+  ]
+}

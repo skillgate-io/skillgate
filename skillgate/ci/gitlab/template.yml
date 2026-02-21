@@ -1,0 +1,68 @@
+# SkillGate GitLab CI/CD Template
+#
+# Usage: Include this template in your .gitlab-ci.yml:
+#
+#   include:
+#     - remote: 'https://raw.githubusercontent.com/skillgate/skillgate/main/skillgate/ci/gitlab/template.yml'
+#
+#   skillgate-scan:
+#     extends: .skillgate-scan
+#     variables:
+#       SKILLGATE_PATH: "./my-skill"
+#       SKILLGATE_POLICY: "production"
+
+.skillgate-scan:
+  image: python:3.12-slim
+  stage: test
+  variables:
+    SKILLGATE_PATH: "."
+    SKILLGATE_POLICY: "production"
+    SKILLGATE_ENFORCE: "true"
+    SKILLGATE_OUTPUT: "json"
+    SKILLGATE_VERSION: ""
+    SKILLGATE_AGENT_COMMAND: ""
+  before_script:
+    - |
+      if [ -n "$SKILLGATE_VERSION" ]; then
+        pip install "skillgate==$SKILLGATE_VERSION" --quiet
+      else
+        pip install skillgate --quiet
+      fi
+  script:
+    - |
+      # Run scan with JSON output for artifact
+      skillgate scan "$SKILLGATE_PATH" \
+        --output json \
+        --policy "$SKILLGATE_POLICY" \
+        --report-file skillgate-report.json || true
+
+      # Run SARIF scan for code quality report
+      skillgate scan "$SKILLGATE_PATH" \
+        --output sarif \
+        --policy "$SKILLGATE_POLICY" \
+        > skillgate-report.sarif 2>/dev/null || true
+
+      # Run enforce scan for exit code
+      if [ "$SKILLGATE_ENFORCE" = "true" ]; then
+        skillgate scan "$SKILLGATE_PATH" \
+          --enforce \
+          --policy "$SKILLGATE_POLICY"
+      else
+        skillgate scan "$SKILLGATE_PATH" \
+          --policy "$SKILLGATE_POLICY"
+      fi
+
+      # Wrapper-only runtime execution for agent CLIs (optional hook)
+      if [ -n "$SKILLGATE_AGENT_COMMAND" ]; then
+        sh -c "skillgate run --env ci -- $SKILLGATE_AGENT_COMMAND"
+      fi
+  artifacts:
+    when: always
+    paths:
+      - skillgate-report.json
+      - skillgate-report.sarif
+    reports:
+      sast: skillgate-report.sarif
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
