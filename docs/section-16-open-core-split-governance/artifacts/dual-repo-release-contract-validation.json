@@ -1,0 +1,6 @@
+{
+  "ci_workflow": ".github/workflows/ci.yml",
+  "contract": "docs/open-core/dual-repo-release-contract.json",
+  "errors": [],
+  "ok": true
+}
