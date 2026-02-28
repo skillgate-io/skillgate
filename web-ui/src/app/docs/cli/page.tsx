@@ -17,7 +17,7 @@ const commandRows = [
   ['skillgate verify report.json', 'Verify signed report'],
   ['skillgate keys generate', 'Create signing keys'],
   ['skillgate run -- <agent-cli-command>', 'Runtime gateway wrapper for agent CLIs'],
-  ['skillgate bom import <cyclonedx.json>', 'Import AI-BOM store for runtime checks'],
+  ['skillgate bom import <cyclonedx.json>', 'Import a trusted component manifest for runtime checks'],
   ['skillgate dag verify <session.json>', 'Verify signed runtime session artifacts'],
 ] as const;
 

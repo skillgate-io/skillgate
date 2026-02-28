@@ -1,13 +1,14 @@
 /* Features page — dedicated feature breakdown */
 
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { FeaturesSection } from '@/components/sections/FeaturesSection';
 import { CTASection } from '@/components/sections/CTASection';
 import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata(
   'Features',
-  'Explore the features that help teams catch risky AI agent behavior and ship safer releases.',
+  'Explore features that protect local AI agents, OpenClaw gateways, Claude Code, Codex CLI, and MCP workflows.',
   '/features',
 );
 
@@ -28,6 +29,34 @@ export default function FeaturesPage() {
       </div>
 
       <FeaturesSection />
+
+      <section className="bg-[#06090f] py-16" aria-labelledby="moat-coverage-heading">
+        <div className="mx-auto max-w-content px-4 sm:px-6 lg:px-8">
+          <h2 id="moat-coverage-heading" className="text-center text-white">Moat Coverage</h2>
+          <p className="mx-auto mt-4 max-w-3xl text-center text-surface-300">
+            Each protection layer has a dedicated guide so teams can deploy it in local development and CI.
+          </p>
+          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {[
+              { title: 'Runtime Sidecar Controls', desc: 'Interception and policy checks before shell, network, and filesystem actions.', href: '/docs/runtime-control' },
+              { title: 'Agent Gateway Wrapper', desc: 'Guard OpenClaw and other local AI agents through skillgate run.', href: '/docs/agent-gateway' },
+              { title: 'Codex CLI Protection', desc: 'Config safety checks, provider trust controls, and CI hardening.', href: '/docs/integrations/codex-cli' },
+              { title: 'Claude Code Protection', desc: 'Instruction, hooks, plugins, and settings safety controls.', href: '/docs/integrations/claude-code' },
+              { title: 'MCP Gateway Protection', desc: 'Trusted provider allowlists, metadata safety, and permission drift checks.', href: '/docs/integrations/mcp-gateway' },
+              { title: 'Signed Security Evidence', desc: 'Signed session records and SARIF output for CI and audit.', href: '/docs/skillgate/enforcement-boundaries' },
+            ].map((item) => (
+              <Link
+                key={item.title}
+                href={item.href}
+                className="rounded-2xl border border-white/15 bg-white/[0.04] p-5 text-surface-200 transition hover:border-white/25 hover:bg-white/[0.06]"
+              >
+                <h3 className="text-base font-semibold text-emerald-300">{item.title}</h3>
+                <p className="mt-2 text-sm text-surface-400">{item.desc}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Rule categories breakdown */}
       <section className="bg-[#070a12] py-20" aria-labelledby="rules-heading">

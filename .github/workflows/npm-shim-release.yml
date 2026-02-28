@@ -7,9 +7,6 @@ on:
         description: "Run publish dry-run only"
         required: false
         default: "true"
-  push:
-    tags:
-      - "npm-shim-v*"
 
 permissions:
   contents: read
@@ -51,12 +48,12 @@ jobs:
         with:
           subject-path: "npm-shim/*.tgz"
       - name: Publish to npm registry (tag/manual non-dry-run only)
-        if: >-
-          ${{
-            (startsWith(github.ref, 'refs/tags/npm-shim-v') ||
-            (github.event_name == 'workflow_dispatch' && inputs.dry_run != 'true'))
-            && secrets.NPM_TOKEN != ''
-          }}
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --access public --provenance
+        run: |
+          if [ -z "${NODE_AUTH_TOKEN}" ]; then
+            echo "NPM_TOKEN is required for publish"
+            exit 1
+          fi
+          npm publish --access public --provenance

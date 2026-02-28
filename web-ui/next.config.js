@@ -4,6 +4,7 @@
 const withBundleAnalyzer = process.env.ANALYZE === 'true'
   ? require('@next/bundle-analyzer')({ enabled: true })
   : (config) => config;
+const docsBase = (process.env.NEXT_PUBLIC_DOCS_BASE_URL || 'https://docs.skillgate.io').replace(/\/+$/, '');
 const isDev = process.env.NODE_ENV !== 'production';
 const connectSrc = [
   "'self'",
@@ -68,18 +69,23 @@ const nextConfig = {
 
   redirects: async () => [
     {
+      source: '/rules',
+      destination: `${docsBase}/rules`,
+      permanent: true,
+    },
+    {
+      source: '/policy',
+      destination: `${docsBase}/policy`,
+      permanent: true,
+    },
+    {
       source: '/docs',
-      destination: '/docs/skillgate',
+      destination: docsBase,
       permanent: true,
     },
     {
-      source: '/docs/cli',
-      destination: '/docs/skillgate/commands',
-      permanent: true,
-    },
-    {
-      source: '/docs/agent-gateway',
-      destination: '/docs/skillgate/runtime-integrations',
+      source: '/docs/:path*',
+      destination: `${docsBase}/:path*`,
       permanent: true,
     },
   ],

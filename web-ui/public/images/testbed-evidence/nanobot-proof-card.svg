@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#05070b"/>
+      <stop offset="100%" stop-color="#0a1220"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <rect x="40" y="40" width="1200" height="640" rx="24" fill="#0b1322" stroke="#1f2a44" stroke-width="2"/>
+  <text x="84" y="118" fill="#86efac" font-size="28" font-family="Arial, Helvetica, sans-serif" font-weight="700">SkillGate Testbed Evidence</text>
+  <text x="84" y="166" fill="#e5e7eb" font-size="34" font-family="Arial, Helvetica, sans-serif" font-weight="700">HKUDS/nanobot (nanobot/skills)</text>
+  <text x="84" y="218" fill="#93c5fd" font-size="22" font-family="Arial, Helvetica, sans-serif">Authenticated real-sidecar replay: yes</text>
+
+  <rect x="84" y="266" width="520" height="120" rx="14" fill="#111827" stroke="#1f2937"/>
+  <text x="110" y="312" fill="#9ca3af" font-size="20" font-family="Arial, Helvetica, sans-serif">Corpus size</text>
+  <text x="110" y="354" fill="#f9fafb" font-size="40" font-family="Arial, Helvetica, sans-serif" font-weight="700">12</text>
+
+  <rect x="636" y="266" width="520" height="120" rx="14" fill="#111827" stroke="#1f2937"/>
+  <text x="662" y="312" fill="#9ca3af" font-size="20" font-family="Arial, Helvetica, sans-serif">Baseline replay size</text>
+  <text x="662" y="354" fill="#f9fafb" font-size="40" font-family="Arial, Helvetica, sans-serif" font-weight="700">6</text>
+
+  <rect x="84" y="420" width="350" height="120" rx="14" fill="#0f172a" stroke="#1f2937"/>
+  <text x="110" y="466" fill="#9ca3af" font-size="20" font-family="Arial, Helvetica, sans-serif">Allows</text>
+  <text x="110" y="510" fill="#22c55e" font-size="40" font-family="Arial, Helvetica, sans-serif" font-weight="700">6</text>
+
+  <rect x="462" y="420" width="350" height="120" rx="14" fill="#0f172a" stroke="#1f2937"/>
+  <text x="488" y="466" fill="#9ca3af" font-size="20" font-family="Arial, Helvetica, sans-serif">Errors</text>
+  <text x="488" y="510" fill="#ef4444" font-size="40" font-family="Arial, Helvetica, sans-serif" font-weight="700">0</text>
+
+  <rect x="840" y="420" width="316" height="120" rx="14" fill="#0f172a" stroke="#1f2937"/>
+  <text x="866" y="466" fill="#9ca3af" font-size="20" font-family="Arial, Helvetica, sans-serif">P95 latency (ms)</text>
+  <text x="866" y="510" fill="#60a5fa" font-size="40" font-family="Arial, Helvetica, sans-serif" font-weight="700">55.00</text>
+
+  <text x="84" y="610" fill="#6b7280" font-size="18" font-family="Arial, Helvetica, sans-serif">Artifacts: nanobot.real-sidecar.baseline.report.json</text>
+</svg>

@@ -94,7 +94,37 @@ export const DOCS_NAV: DocsNavItem[] = [
   {
     href: '/docs/integrations',
     title: 'Integrations',
-    summary: 'GitHub, GitLab, webhook, and alert setup.',
+    summary: 'VS Code extension, Python SDK, Codex CLI, Claude Code, MCP Gateway, GitHub, and GitLab setup.',
+    section: 'Reference',
+  },
+  {
+    href: '/docs/integrations/vscode-extension',
+    title: 'VS Code Extension',
+    summary: 'Shift-left editor diagnostics, preflight onboarding, and runtime-aware controls.',
+    section: 'Reference',
+  },
+  {
+    href: '/docs/integrations/python-sdk',
+    title: 'Python SDK Integration',
+    summary: '@enforce runtime gating, AI-BOM registration, and framework adapters.',
+    section: 'Reference',
+  },
+  {
+    href: '/docs/integrations/codex-cli',
+    title: 'Codex CLI Integration',
+    summary: 'Pre-execution guardrails, provider trust controls, and CI-safe defaults.',
+    section: 'Reference',
+  },
+  {
+    href: '/docs/integrations/claude-code',
+    title: 'Claude Code Integration',
+    summary: 'Protect hooks, instruction files, plugins, and settings.',
+    section: 'Reference',
+  },
+  {
+    href: '/docs/integrations/mcp-gateway',
+    title: 'MCP Gateway Integration',
+    summary: 'Trust MCP providers, detect tool metadata injection, and stop permission drift.',
     section: 'Reference',
   },
   {

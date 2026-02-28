@@ -11,11 +11,13 @@ import { Button } from '@/components/ui/Button';
 import { trackEvent } from '@/lib/analytics';
 import { useAuth } from '@/components/providers/AuthProvider';
 
+const DOCS_BASE_URL = (process.env.NEXT_PUBLIC_DOCS_BASE_URL || 'https://docs.skillgate.io').replace(/\/+$/, '');
+
 const NAV_LINKS = [
   { href: '/features', label: 'Features' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/roadmap', label: 'Roadmap' },
-  { href: '/docs', label: 'Docs' },
+  { href: `${DOCS_BASE_URL}`, label: 'Docs', external: true },
 ] as const;
 
 export function Header() {
@@ -158,17 +160,29 @@ export function Header() {
         {/* Desktop nav */}
         <div className="hidden items-center gap-1 rounded-2xl border border-white/10 bg-white/[0.02] px-2.5 py-1.5 md:flex">
           {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-surface-400 transition-colors hover:bg-white/5 hover:text-surface-200"
-            >
-              {link.label}
-            </Link>
+            'external' in link && link.external ? (
+              <a
+                key={link.href}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-surface-400 transition-colors hover:bg-white/5 hover:text-surface-200"
+              >
+                {link.label}
+              </a>
+            ) : (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-surface-400 transition-colors hover:bg-white/5 hover:text-surface-200"
+              >
+                {link.label}
+              </Link>
+            )
           ))}
 
           <a
-            href="https://github.com/skillgate/skillgate"
+            href="https://github.com/skillgate-io/skillgate"
             target="_blank"
             rel="noopener noreferrer"
             className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-surface-400 transition-colors hover:bg-white/5 hover:text-surface-200"
@@ -275,19 +289,33 @@ export function Header() {
       >
         <div className="flex flex-col gap-1 p-4">
           {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              ref={link.href === '/features' ? firstMenuItemRef : undefined}
-              href={link.href}
-              className="rounded-lg px-4 py-3 text-lg font-medium text-surface-100 hover:bg-white/10"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {link.label}
-            </Link>
+            'external' in link && link.external ? (
+              <a
+                key={link.href}
+                ref={link.href.includes('docs') ? undefined : firstMenuItemRef}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-lg px-4 py-3 text-lg font-medium text-surface-100 hover:bg-white/10"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {link.label}
+              </a>
+            ) : (
+              <Link
+                key={link.href}
+                ref={link.href === '/features' ? firstMenuItemRef : undefined}
+                href={link.href}
+                className="rounded-lg px-4 py-3 text-lg font-medium text-surface-100 hover:bg-white/10"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            )
           ))}
 
           <a
-            href="https://github.com/skillgate/skillgate"
+            href="https://github.com/skillgate-io/skillgate"
             target="_blank"
             rel="noopener noreferrer"
             className="rounded-lg px-4 py-3 text-lg font-medium text-surface-100 hover:bg-white/10"

@@ -9,11 +9,14 @@ import { useAuth } from '@/components/providers/AuthProvider';
 import { isApiError } from '@/lib/api-client';
 import { trackEvent } from '@/lib/analytics';
 
+const REQUIRE_EMAIL_VERIFICATION =
+  (process.env.NEXT_PUBLIC_REQUIRE_EMAIL_VERIFICATION || '').toLowerCase() === 'true';
+
 export function LoginForm() {
   const { login } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(searchParams.get('email') || '');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -27,7 +30,7 @@ export function LoginForm() {
       const user = await login({ email, password });
       trackEvent('login_success');
       const redirect = searchParams.get('redirect');
-      if (!user.email_verified) {
+      if (REQUIRE_EMAIL_VERIFICATION && !user.email_verified) {
         router.push('/verify-email');
       } else {
         router.push(redirect || '/dashboard');

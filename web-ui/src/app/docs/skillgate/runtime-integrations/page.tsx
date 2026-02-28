@@ -6,7 +6,7 @@ import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata(
   'SkillGate Runtime Integrations',
-  'Run Codex, Claude Code, Cursor, and Copilot CLI through SkillGate safety checks.',
+  'Run Claude Code and Codex through SkillGate runtime checks with MCP and CI safety controls.',
   '/docs/skillgate/runtime-integrations',
 );
 
@@ -30,7 +30,7 @@ skillgate dag verify .skillgate/runtime/codex.json`,
     commands: `skillgate run --env dev -- claude -p "summarize security risks in this repo"
 skillgate run --env ci --skill-id approved-safe-skill --skill-hash <sha256> --scan-attestation valid -- claude -p "review deployment diff"`,
     notes: [
-      'Provide `--skill-id`, `--skill-hash`, and `--scan-attestation` to enforce AI-BOM in strict flows.',
+      'Provide `--skill-id`, `--skill-hash`, and `--scan-attestation` to enforce strict trust checks.',
       'Set `--top-outcome sanitize` when you want suspicious outputs redacted instead of blocked.',
     ],
   },
@@ -40,7 +40,7 @@ export default function DocsRuntimeIntegrationsPage() {
   return (
     <DocsPage
       title="Runtime Integrations"
-      summary="Choose your agent CLI and apply the run-time safety examples directly."
+      summary="Use these integration patterns for Claude Code, Codex CLI, and MCP tool governance."
     >
       <DocsBlock title="Security Guarantee Boundary">
         <p>
@@ -61,6 +61,13 @@ export default function DocsRuntimeIntegrationsPage() {
       </DocsBlock>
 
       <DocsBlock title="Integration examples">
+        <div className="mb-4 flex flex-wrap gap-2 text-xs text-surface-300">
+          {['Claude Code', 'Codex CLI', 'MCP Gateway'].map((label) => (
+            <span key={label} className="rounded-full border border-emerald-300/30 bg-emerald-500/10 px-3 py-1">
+              {label}
+            </span>
+          ))}
+        </div>
         <IntegrationTabs examples={[...examples]} />
       </DocsBlock>
 

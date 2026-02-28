@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="web-ui/public/images/hero-shield.svg" alt="SkillGate" width="132" />
-</p>
-
 <h1 align="center">SkillGate</h1>
 <p align="center"><strong>Deterministic AI Agent Security Governance for CI/CD and Runtime.</strong></p>
 
@@ -33,21 +29,44 @@ compliance, and procurement.
 
 ## Quick Start
 
-### Install (Python)
+Choose one entrypoint:
+
+- Recommended: Python CLI (canonical runtime)
+- Alternative: npm wrapper (delegates to Python runtime)
+
+### Option A — Python CLI (recommended)
 
 ```bash
 pipx install skillgate
 skillgate version
 ```
 
-### Install (npm wrapper)
+### Option B — npm wrapper (optional)
+
+The npm package is a launcher only. It still requires Python + `skillgate` installed.
 
 ```bash
-npm install -g @skillgate/cli
+npm install -g @skillgate-io/cli
 skillgate version
 # or run without install:
-npx @skillgate/cli version
+npx @skillgate-io/cli version
 ```
+
+### Required runtime configuration (minimum)
+
+SkillGate reads configuration from environment variables (shell, `.env`, CI, or deployment secrets).
+
+```bash
+export SKILLGATE_API_KEY="sg_free_or_paid_key_here"
+```
+
+Optional, depending on your flow:
+
+```bash
+export SKILLGATE_API_URL="https://api.skillgate.io"
+```
+
+For the full environment reference, see `.env.example`.
 
 ### First governed scan
 
@@ -107,7 +126,7 @@ skillgate/
 
 ## CTA: Build a Governed Agent Pipeline
 
-1. Install SkillGate (`pipx` or `npm` wrapper).
+1. Install SkillGate (Python CLI recommended; npm wrapper optional).
 2. Run your first enforced scan.
 3. Add CI gate enforcement.
 4. Generate and verify signed evidence.

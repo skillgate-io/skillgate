@@ -12,6 +12,8 @@ const ThreatTear = dynamic(() => import('@/components/hero/ThreatTear'), {
   loading: () => null,
 });
 
+const DOCS_BASE_URL = (process.env.NEXT_PUBLIC_DOCS_BASE_URL || 'https://docs.skillgate.io').replace(/\/+$/, '');
+
 export function HeroSection() {
   return (
     <section
@@ -41,18 +43,32 @@ export function HeroSection() {
         <div className="relative mx-auto max-w-3xl pt-20 text-center sm:pt-24 lg:pt-28">
           {/* Announcement badge */}
           <Badge variant="brand" className="mb-6">
-            AI Agent Safety for Teams
+            Agent Capability Firewall
           </Badge>
 
           <h1 id="hero-heading" className="text-white">
-            Block risky AI agent changes before they ship
-            <span className="block text-emerald-300">From pull requests to production runs</span>
+            Protect your OpenClaw gateway before any tool runs
+            <span className="block text-emerald-300">One runtime policy layer for OpenClaw, Claude Code, Codex CLI, and MCP</span>
           </h1>
 
           <p className="mt-6 text-lg leading-8 text-surface-300 sm:text-xl">
-            SkillGate helps your team catch unsafe behavior early, block risky actions,
-            and keep a clear record of what happened and why.
+            SkillGate blocks high-risk shell, network, and filesystem actions before execution,
+            catches malicious skill behavior and instruction injection, and records each decision for audit review.
           </p>
+          <p className="mt-3 text-sm text-surface-400 sm:text-base">
+            Validated on public agent testbeds with OpenClaw workflows, Claude Code and Codex usage patterns,
+            MCP tool chains, VS Code extension onboarding, and Python SDK runtime gates.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-surface-300">
+            {['VS Code Extension', 'Python SDK', 'Claude Code', 'Codex CLI', 'MCP Gateway', 'OpenClaw Gateway'].map((label) => (
+              <span
+                key={label}
+                className="rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
 
           {/* CTA buttons */}
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
@@ -72,7 +88,7 @@ export function HeroSection() {
               className="border-white/70 text-white hover:bg-white/10 active:bg-white/20"
               onClick={() => {
                 trackEvent('docs_click', 'hero_scan_skill');
-                window.location.href = '/docs/get-started';
+                window.location.href = `${DOCS_BASE_URL}/get-started`;
               }}
             >
               <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
