@@ -22,7 +22,11 @@ from skillgate.cli.commands.gateway import (
 from skillgate.cli.commands.hooks import install_command, uninstall_command
 from skillgate.cli.commands.hunt import hunt_command
 from skillgate.cli.commands.init import init_command
-from skillgate.cli.commands.keys import keys_generate_command
+from skillgate.cli.commands.keys import (
+    keys_export_command,
+    keys_generate_command,
+    keys_list_command,
+)
 from skillgate.cli.commands.reputation import (
     reputation_check_command,
     reputation_submit_command,
@@ -44,6 +48,8 @@ app = typer.Typer(
 
 keys_app = typer.Typer(help="Key management commands")
 keys_app.command("generate", help="Generate a new Ed25519 signing keypair")(keys_generate_command)
+keys_app.command("list", help="List available signing key material")(keys_list_command)
+keys_app.command("export", help="Export key material (public by default)")(keys_export_command)
 app.add_typer(keys_app, name="keys")
 
 hooks_app = typer.Typer(help="Git hooks management")
