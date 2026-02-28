@@ -54,12 +54,12 @@
     "npm_shim": {
       "tier": "experimental",
       "platforms": ["macos", "linux", "windows", "wsl"],
-      "install_latest": "npm install -g @skillgate/cli",
-      "install_stable": "npm install -g @skillgate/cli",
-      "install_pinned": "npm install -g @skillgate/cli@{version}",
+      "install_latest": "npm install -g @skillgate-io/cli",
+      "install_stable": "npm install -g @skillgate-io/cli",
+      "install_pinned": "npm install -g @skillgate-io/cli@{version}",
       "verify": "skillgate version",
-      "uninstall": "npm uninstall -g @skillgate/cli",
-      "upgrade": "npm install -g @skillgate/cli@latest"
+      "uninstall": "npm uninstall -g @skillgate-io/cli",
+      "upgrade": "npm install -g @skillgate-io/cli@latest"
     }
   }
 }

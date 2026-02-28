@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 import os
 import time
+import uuid
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +16,12 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Confirm, Prompt
 
+from skillgate.auth import (
+    SecureSLTStore,
+    exchange_api_key,
+    get_auth_error,
+    should_renew_slt,
+)
 from skillgate.config.license import Tier, validate_api_key
 
 console = Console()
@@ -21,6 +29,7 @@ console = Console()
 # Credentials storage
 CREDENTIALS_DIR = Path.home() / ".skillgate"
 CREDENTIALS_FILE = CREDENTIALS_DIR / "credentials.json"
+SLT_STORE = SecureSLTStore()
 
 # API endpoints (configurable for dev/prod)
 DEFAULT_API_BASE = "https://api.skillgate.io"
@@ -80,6 +89,23 @@ def get_api_key() -> str | None:
         return str(creds["api_key"])
 
     # Priority 3: Stored OAuth access token
+    if creds and creds.get("access_token"):
+        return str(creds["access_token"])
+
+    return None
+
+
+def get_bearer_token() -> str | None:
+    """Get bearer token for authenticated API routes.
+
+    Priority:
+    1. SKILLGATE_BEARER_TOKEN environment variable
+    2. Stored OAuth access token from credentials.json
+    """
+    if token := os.environ.get("SKILLGATE_BEARER_TOKEN"):
+        return token
+
+    creds = _load_credentials()
     if creds and creds.get("access_token"):
         return str(creds["access_token"])
 
@@ -181,16 +207,36 @@ def login_command() -> None:
             console.print(f"[red]✗[/] Invalid SKILLGATE_API_KEY: {e}")
         return
 
-    # Check if already authenticated via stored credentials
-    if (creds := _load_credentials()) and creds.get("api_key"):
+    # Backward-compatible: existing plaintext API-key credentials.
+    if (legacy := _load_credentials()) and legacy.get("api_key"):
         try:
-            tier = validate_api_key(str(creds["api_key"]))
-            email = creds.get("email", "unknown")
+            tier = validate_api_key(str(legacy["api_key"]))
+            email = legacy.get("email", "unknown")
             console.print(f"[green]✓[/] Already logged in as {email} ({tier.value} tier)")
             console.print("[dim]Run 'skillgate auth logout' to log out.[/]")
             return
         except Exception:
-            pass  # Invalid stored key, continue to login
+            pass
+
+    # Check if already authenticated via stored SLT metadata.
+    if creds := _load_credentials():
+        slt = SLT_STORE.load()
+        expires_raw = creds.get("slt_expires_at")
+        if slt and isinstance(expires_raw, str):
+            try:
+                expires_at = datetime.fromisoformat(expires_raw)
+                if should_renew_slt(expires_at=expires_at, now=datetime.now(tz=timezone.utc)):
+                    console.print(
+                        "[yellow]SLT expires soon; run 'skillgate auth login' to renew.[/]"
+                    )
+                else:
+                    tier_name = str(creds.get("tier", "unknown"))
+                    email = str(creds.get("email", "unknown"))
+                    console.print(f"[green]✓[/] Already logged in as {email} ({tier_name} tier)")
+                    console.print("[dim]Run 'skillgate auth logout' to log out.[/]")
+                    return
+            except ValueError:
+                pass
 
     console.print(
         Panel.fit(
@@ -230,22 +276,42 @@ def _login_with_api_key() -> None:
         console.print("[red]✗ Invalid API key[/]")
         raise typer.Exit(1) from None
 
-    # Verify with server (optional, graceful fallback)
-    user_info = _verify_api_key_with_server(api_key)
-    email = user_info.get("email", "unknown") if user_info else f"{tier.value} user"
+    # Exchange API key for Session License Token (SLT) and store securely.
+    try:
+        exchange = exchange_api_key(
+            api_base=_get_api_base(),
+            api_key=api_key,
+            device_id=f"cli-{uuid.uuid4().hex[:16]}",
+            session_info={"client": "skillgate-cli"},
+        )
+        storage_backend = SLT_STORE.store(exchange.slt)
+    except httpx.HTTPStatusError as exc:
+        if exc.response.status_code in {400, 401}:
+            detail = get_auth_error("AUTH_KEY_INVALID")
+        else:
+            detail = get_auth_error("AUTH_SERVICE_UNAVAILABLE")
+        console.print(f"[red]✗ {detail.message}[/]")
+        console.print(f"[dim]{detail.remediation}[/]")
+        raise typer.Exit(1) from None
+    except httpx.HTTPError:
+        detail = get_auth_error("AUTH_SERVICE_UNAVAILABLE")
+        console.print(f"[red]✗ {detail.message}[/]")
+        console.print(f"[dim]{detail.remediation}[/]")
+        raise typer.Exit(1) from None
 
-    # Save credentials
+    # Never store API key in plaintext credentials.
     _save_credentials(
         {
-            "api_key": api_key,
             "tier": tier.value,
-            "email": email,
-            "auth_method": "api_key",
+            "email": f"{tier.value} user",
+            "auth_method": "api_key_exchange",
+            "slt_expires_at": exchange.expires_at.isoformat(),
+            "slt_storage": storage_backend,
         }
     )
 
-    console.print(f"\n[green]✓[/] Logged in as {email} ({tier.value} tier)")
-    console.print("[dim]Credentials stored in ~/.skillgate/credentials.json[/]")
+    console.print(f"\n[green]✓[/] Logged in ({tier.value} tier)")
+    console.print(f"[dim]SLT stored via {storage_backend}; API key not persisted.[/]")
 
 
 def _login_with_oauth(provider: str) -> None:
@@ -304,6 +370,7 @@ def logout_command() -> None:
 
     if Confirm.ask("Log out and clear stored credentials?"):
         _clear_credentials()
+        SLT_STORE.clear()
         console.print("[green]✓[/] Logged out successfully")
 
 

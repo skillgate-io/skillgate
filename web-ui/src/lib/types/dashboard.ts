@@ -71,6 +71,12 @@ export interface ScanListResponse {
   total: number;
 }
 
+export interface ScanDetailResponse {
+  scan_id: string;
+  stored_at: string;
+  report: ScanListItem['report'] & Record<string, unknown>;
+}
+
 // --- Billing ---
 
 export interface CustomerPortalResponse {

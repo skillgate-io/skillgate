@@ -9,6 +9,9 @@ import { useAuth } from '@/components/providers/AuthProvider';
 import { isApiError } from '@/lib/api-client';
 import { trackEvent } from '@/lib/analytics';
 
+const REQUIRE_EMAIL_VERIFICATION =
+  (process.env.NEXT_PUBLIC_REQUIRE_EMAIL_VERIFICATION || '').toLowerCase() === 'true';
+
 export function SignupForm() {
   const { signup } = useAuth();
   const router = useRouter();
@@ -26,7 +29,7 @@ export function SignupForm() {
     setLoading(true);
 
     try {
-      await signup({
+      const result = await signup({
         email,
         password,
         ...(fullName.trim() ? { full_name: fullName.trim() } : {}),
@@ -35,7 +38,11 @@ export function SignupForm() {
       if (inviteRef) {
         trackEvent('invite_accepted', 'signup_success', { source: 'dashboard_invite_link' });
       }
-      router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+      if (result.verification_required || REQUIRE_EMAIL_VERIFICATION) {
+        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+      } else {
+        router.push(`/login?email=${encodeURIComponent(email)}`);
+      }
     } catch (err) {
       if (isApiError(err)) {
         setError(err.message);

@@ -5,7 +5,7 @@ import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata(
   'Agent Gateway',
-  'Run Codex, Claude, and other agent CLIs through SkillGate checks before commands execute.',
+  'Route OpenClaw, Codex, Claude, and other local AI agents through SkillGate safety checks with clear audit evidence.',
   '/docs/agent-gateway',
 );
 
@@ -13,7 +13,7 @@ export default function DocsAgentGatewayPage() {
   return (
     <DocsPage
       title="Agent Gateway (`skillgate run`)"
-      summary="Use this page to run Codex, Claude, or any CLI agent through SkillGate safety checks."
+      summary="Use this page to run Codex, Claude, or any CLI agent through SkillGate policy enforcement."
     >
       <DocsBlock title="Security Guarantee Boundary">
         <p>
@@ -36,7 +36,7 @@ export default function DocsAgentGatewayPage() {
       <DocsBlock title="When to use this command">
         <ul className="list-disc space-y-2 pl-6">
           <li>Block unsafe runtime commands before execution in `ci`, `prod`, or `strict`.</li>
-          <li>Apply AI-BOM validation at invocation time (`--skill-id`, `--skill-hash`).</li>
+          <li>Verify invocation identity at runtime (`--skill-id`, `--skill-hash`).</li>
           <li>Detect tool output poisoning (TOP) before output is re-used by an agent.</li>
           <li>Generate signed runtime session artifacts for audit and CI evidence.</li>
         </ul>
@@ -57,9 +57,9 @@ skillgate run \
         />
       </DocsBlock>
 
-      <DocsBlock title="AI-BOM runtime validation">
+      <DocsBlock title="Runtime trust validation">
         <CodeBlock
-          code={`# 1) Import CycloneDX BOM
+          code={`# 1) Import a trusted component manifest
 skillgate bom import ./bom.cyclonedx.json \
   --output .skillgate/bom/approved.json
 
@@ -71,7 +71,7 @@ skillgate bom validate \
   --skill-hash e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 \
   --scan-attestation valid
 
-# 3) Enforce the same checks on runtime execution
+# 3) Enforce the same trust checks on runtime execution
 skillgate run \
   --env strict \
   --skill-id approved-safe-skill \

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>12</LangVersion>
+    <PackageId>SkillGate.Client</PackageId>
+    <Version>0.1.0</Version>
+    <Description>C# HTTP client for the SkillGate runtime sidecar</Description>
+    <PackageTags>skillgate;security;ai;agent;governance</PackageTags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+</Project>

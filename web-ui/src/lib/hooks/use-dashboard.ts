@@ -16,6 +16,7 @@ import {
   rotateApiKey,
   getUsageMetrics,
   listScans,
+  getScan,
   createCustomerPortal,
   type UserResponse,
 } from '@/lib/api-client';
@@ -34,6 +35,7 @@ export const dashboardKeys = {
   usage: () => [...dashboardKeys.all, 'usage'] as const,
   scans: (params?: { limit?: number; offset?: number }) =>
     [...dashboardKeys.all, 'scans', params] as const,
+  scan: (scanId: string) => [...dashboardKeys.all, 'scan', scanId] as const,
 } as const;
 
 function requireToken(): string {
@@ -135,6 +137,16 @@ export function useScans(limit: number = 20, offset: number = 0) {
     queryKey: dashboardKeys.scans({ limit, offset }),
     queryFn: () => listScans(requireToken(), limit, offset),
     staleTime: 60 * 1000, // 1 min
+    gcTime: 5 * 60 * 1000,
+  });
+}
+
+export function useScan(scanId: string) {
+  return useQuery({
+    queryKey: dashboardKeys.scan(scanId),
+    queryFn: () => getScan(requireToken(), scanId),
+    enabled: scanId.length > 0,
+    staleTime: 60 * 1000,
     gcTime: 5 * 60 * 1000,
   });
 }

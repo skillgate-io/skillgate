@@ -421,6 +421,20 @@ def format_human(
         con.print(breakdown_table)
         con.print()
 
+    if report.risk_score.findings_count > 0:
+        con.print("[bold]Next steps:[/bold]")
+        con.print(
+            "  - Run with [bold]--explain[/bold] for finding-level "
+            "rationale and remediation context."
+        )
+        con.print(
+            "  - Use [bold]--output json --report-file <path>[/bold] "
+            "to inspect/share full report details."
+        )
+        con.print("  - Rule catalog: [underline]https://docs.skillgate.io/rules[/underline]")
+        con.print("  - Policy reference: [underline]https://docs.skillgate.io/policy[/underline]")
+        con.print()
+
     if buf is not None:
         return buf.getvalue()
     return ""

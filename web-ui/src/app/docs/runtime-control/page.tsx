@@ -4,7 +4,7 @@ import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata(
   'Runtime Control',
-  'Control AI agent actions at run time with approvals, limits, and clear verification steps.',
+  'Control local AI agent actions at run time with approvals, limits, and verification steps for OpenClaw, Claude, Codex, and MCP workflows.',
   '/docs/runtime-control',
 );
 

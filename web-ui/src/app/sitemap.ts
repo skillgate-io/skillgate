@@ -5,20 +5,6 @@ import type { MetadataRoute } from 'next';
 const BASE_URL = 'https://skillgate.io';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const docsPages = [
-    '/docs',
-    '/docs/get-started',
-    '/docs/product',
-    '/docs/cli',
-    '/docs/api',
-    '/docs/integrations',
-    '/docs/security',
-    '/docs/legal',
-    '/docs/operations',
-    '/docs/migrations',
-    '/docs/enterprise',
-  ] as const;
-
   return [
     {
       url: BASE_URL,
@@ -44,12 +30,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
-    ...docsPages.map((path) => ({
-      url: `${BASE_URL}${path}`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: path === '/docs' ? 0.8 : 0.7,
-    })),
     {
       url: `${BASE_URL}/about`,
       lastModified: new Date(),
@@ -73,6 +53,72 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.6,
+    },
+    {
+      url: `${BASE_URL}/docs`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${BASE_URL}/docs/get-started`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/docs/agent-gateway`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
+      url: `${BASE_URL}/docs/runtime-control`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/docs/integrations`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/docs/integrations/codex-cli`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/docs/integrations/vscode-extension`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${BASE_URL}/docs/integrations/python-sdk`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${BASE_URL}/docs/integrations/claude-code`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/docs/integrations/mcp-gateway`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/docs/skillgate/runtime-integrations`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
     },
     {
       url: `${BASE_URL}/legal/dpa-template`,

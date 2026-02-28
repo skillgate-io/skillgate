@@ -36,7 +36,7 @@ export function resolveInstallCommand(
 
 function resolveRunCommand(channelKey: string): string {
   if (channelKey === 'npm_shim') {
-    return 'npx @skillgate/cli scan ./my-agent-skill --enforce --policy production';
+    return 'npx @skillgate-io/cli scan ./my-agent-skill --enforce --policy production';
   }
   return 'skillgate scan ./my-agent-skill --enforce --policy production';
 }
