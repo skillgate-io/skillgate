@@ -13,6 +13,11 @@ Status: Locked v1 (2026-02-21) for Section 16 split governance gates.
 - `skillgate/ci/**`
 - `skillgate/core/signer/**`
 - `skillgate/core/models/**`
+- `go-shim/**`
+- `rust-shim/**`
+- `java-shim/**`
+- `dotnet-shim/**`
+- `ruby-shim/**`
 - `docs/openapi/skillgate-openapi.json`
 - `web-ui/**`
 - `scripts/install/**`
