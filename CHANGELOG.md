@@ -5,6 +5,12 @@ All notable changes to SkillGate will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-03-01
+
+### Changed
+
+- Switched Python package long description to `README-PYPI.md` to remove internal release-ops content from PyPI project page.
+
 ## [1.0.0] - 2026-02-15
 
 ### Added

@@ -255,7 +255,7 @@ export const PRICING_TIERS: PricingTier[] = [
     features: [
       'Unlimited scans',
       'All 7 languages (+ Go, Rust, Ruby)',
-      '119 detection rules',
+      '120 detection rules',
       'Markdown and multi-artifact detection',
       'Full risk scoring with severity + confidence breakdown',
       'Policy customization (YAML)',

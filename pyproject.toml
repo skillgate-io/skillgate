@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "skillgate"
 dynamic = ["version"]
 description = "CLI-first CI/CD policy enforcement tool that scans agent skills for security risks"
-readme = "README.md"
+readme = "README-PYPI.md"
 license = {text = "Proprietary"}
 requires-python = ">=3.10,<3.14"
 authors = [{name = "SkillGate Team"}]
@@ -36,9 +36,9 @@ dependencies = [
 [project.urls]
 Homepage = "https://skillgate.io"
 Documentation = "https://skillgate.io/docs"
-Repository = "https://github.com/skillgate/skillgate"
-Changelog = "https://github.com/skillgate/skillgate/blob/main/CHANGELOG.md"
-Issues = "https://github.com/skillgate/skillgate/issues"
+Repository = "https://github.com/skillgate-io/skillgate"
+Changelog = "https://github.com/skillgate-io/skillgate/blob/main/CHANGELOG.md"
+Issues = "https://github.com/skillgate-io/skillgate/issues"
 
 [project.optional-dependencies]
 watch = [

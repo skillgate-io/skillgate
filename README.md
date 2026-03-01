@@ -120,7 +120,6 @@ skillgate/
 ## Documentation
 
 - Product and roadmap: `docs/PRD.md`, `docs/IMPLEMENTATION-PLAN.md`
-- Open-core split governance: `docs/section-16-open-core-split-governance/README.md`
 - Deployment runbooks: `docs/PROD-SETUP-NETLIFY-RAILWAY.md`, `docs/STABLE-LAUNCH-RUNBOOK.md`
 - API migrations: `docs/API-MIGRATIONS.md`
 

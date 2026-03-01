@@ -162,7 +162,7 @@ export async function GET() {
             whiteSpace: 'nowrap',
           }}
         >
-          SkillGate · 119 rules · 7 languages · CI/CD enforcement
+          SkillGate · 120 rules · 7 languages · CI/CD enforcement
         </div>
       </div>
     ),

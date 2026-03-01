@@ -34,3 +34,5 @@ next-env.d.ts
 
 # Vercel
 .vercel
+
+docs/demo-fixtures/

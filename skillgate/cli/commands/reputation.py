@@ -18,9 +18,59 @@ from skillgate.core.reputation.models import (
     SignedReputationData,
 )
 from skillgate.core.reputation.verifier import sign_reputation_data, verify_reputation_data
-from skillgate.core.signer.keys import load_signing_key
+from skillgate.core.signer.keys import generate_keypair, load_public_key_hex, load_signing_key
 
 console = Console(stderr=True)
+
+
+def reputation_init_command(
+    store: str = typer.Option(
+        ".skillgate/reputation/reputation.json",
+        "--store",
+        help="Path to write the signed baseline reputation store.",
+    ),
+    key_dir: str | None = typer.Option(
+        None,
+        "--key-dir",
+        help="Optional signing key directory. Defaults to ~/.skillgate/keys.",
+    ),
+    force: bool = typer.Option(
+        False,
+        "--force",
+        help="Overwrite an existing store file.",
+    ),
+) -> None:
+    """Create a signed baseline reputation store for first-time setup."""
+    store_path = Path(store)
+    if store_path.exists() and not force:
+        raise typer.BadParameter(
+            f"Reputation store already exists: {store_path}. Use --force to overwrite."
+        )
+
+    key_dir_path = Path(key_dir) if key_dir else None
+    try:
+        signing_key = load_signing_key(key_dir_path)
+    except Exception:
+        generate_keypair(key_dir=key_dir_path)
+        signing_key = load_signing_key(key_dir_path)
+
+    signed = sign_reputation_data(
+        SignedReputationData(entries=[]),
+        bytes(signing_key),
+    )
+    store_path.parent.mkdir(parents=True, exist_ok=True)
+    store_path.write_text(
+        json.dumps(signed.model_dump(mode="json"), indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
+
+    payload = {
+        "ok": True,
+        "store": str(store_path),
+        "entries": 0,
+        "public_key": load_public_key_hex(key_dir_path),
+    }
+    typer.echo(json.dumps(payload, sort_keys=True, separators=(",", ":")))
 
 
 def reputation_verify_command(

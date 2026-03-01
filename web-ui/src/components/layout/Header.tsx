@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { trackEvent } from '@/lib/analytics';
@@ -23,6 +23,7 @@ const NAV_LINKS = [
 export function Header() {
   const { user, isAuthenticated, loading, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -82,10 +83,15 @@ export function Header() {
     router.push('/');
   }
 
+  const isDashboardHeader = isAuthenticated && pathname.startsWith('/dashboard');
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[#05070c]/80 backdrop-blur-xl" role="banner">
       <nav
-        className="mx-auto flex max-w-content items-center justify-between px-4 py-4 sm:px-6 lg:px-8"
+        className={cn(
+          'flex w-full items-center justify-between px-4 py-4 sm:px-6 lg:px-8',
+          isDashboardHeader ? 'max-w-none' : 'mx-auto max-w-content',
+        )}
         aria-label="Main navigation"
       >
         <Link
@@ -158,7 +164,7 @@ export function Header() {
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden items-center gap-1 rounded-2xl border border-white/10 bg-white/[0.02] px-2.5 py-1.5 md:flex">
+        <div className="ml-auto hidden items-center gap-1 rounded-2xl border border-white/10 bg-white/[0.02] px-2.5 py-1.5 md:flex">
           {NAV_LINKS.map((link) => (
             'external' in link && link.external ? (
               <a

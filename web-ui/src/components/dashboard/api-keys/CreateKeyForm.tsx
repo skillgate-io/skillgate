@@ -15,6 +15,10 @@ const AVAILABLE_SCOPES = [
   { id: 'team:write', label: 'Manage team' },
   { id: 'billing:read', label: 'Read billing' },
 ] as const;
+const DOCS_BASE_URL = (process.env.NEXT_PUBLIC_DOCS_BASE_URL || 'https://docs.skillgate.io').replace(
+  /\/+$/,
+  '',
+);
 
 interface CreateKeyFormProps {
   onCreated: (key: APIKeyCreateResponse) => void;
@@ -75,7 +79,19 @@ export function CreateKeyForm({ onCreated, onCancel }: CreateKeyFormProps) {
       />
 
       <div>
-        <p className="mb-2 text-sm font-medium text-surface-200">Scopes</p>
+        <div className="mb-2 flex items-center gap-2">
+          <p className="text-sm font-medium text-surface-200">Scopes</p>
+          <a
+            href={`${DOCS_BASE_URL}/api-key-scopes`}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Learn how API key scopes work"
+            title="Learn how API key scopes work"
+            className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-white/20 text-xs font-semibold text-surface-300 transition-colors hover:border-brand-400/60 hover:text-brand-300"
+          >
+            ?
+          </a>
+        </div>
         <div className="flex flex-wrap gap-2">
           {AVAILABLE_SCOPES.map((scope) => (
             <button

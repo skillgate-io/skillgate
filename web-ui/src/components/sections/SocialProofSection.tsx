@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 export function SocialProofSection() {
   const stats = [
-    { value: '119', label: 'Security Checks' },
+    { value: '120', label: 'Security Checks' },
     { value: '7', label: 'Attack Surfaces Governed' },
     { value: '≤20ms', label: 'Sidecar P95 Target' },
     { value: '≤30ms', label: 'Codex Bridge P95 Target' },

@@ -194,7 +194,7 @@ export function faqJsonLd(): string {
     {
       question: 'Which languages does SkillGate support?',
       answer:
-        'SkillGate supports 7 languages: Python, JavaScript, TypeScript, Shell/Bash, Go, Rust, and Ruby, with 119 detection rules.',
+        'SkillGate supports 7 languages: Python, JavaScript, TypeScript, Shell/Bash, Go, Rust, and Ruby, with 120 detection rules.',
     },
     {
       question: 'Does SkillGate execute my code?',

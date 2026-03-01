@@ -9,8 +9,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import NamedTuple
 
+import click
 import httpx
 import typer
+from click.core import ParameterSource
 from rich.console import Console
 
 from skillgate.cli.formatters.human import format_human
@@ -246,6 +248,29 @@ def scan_command(
     ),
 ) -> None:
     """Scan a skill bundle for security risks."""
+    output_value = output.strip().lower()
+    if output_value not in {"human", "json", "sarif"}:
+        if not quiet:
+            console.print(
+                f"[red]Error:[/red] Unknown output format '{output}'. Use human, json, or sarif."
+            )
+        raise typer.Exit(code=3)
+
+    if sign and report_file and output_value == "human":
+        if _output_flag_explicitly_set():
+            if not quiet:
+                console.print(
+                    "[red]Error:[/red] --sign with --report-file requires machine-readable output. "
+                    "Use --output json."
+                )
+            raise typer.Exit(code=3)
+        output_value = "json"
+        if not quiet:
+            console.print(
+                "[yellow]Note:[/yellow] Using --output json because "
+                "--sign and --report-file were set."
+            )
+
     resolved_explain_backend = _resolve_explain_backend(
         explain_source=explain_source,
         llm_provider=llm_provider,
@@ -299,7 +324,7 @@ def scan_command(
                 raise typer.Exit(code=3)
             _run_watch_mode(
                 str(bundle_path),
-                output,
+                output_value,
                 policy,
                 enforce,
                 quiet,
@@ -319,7 +344,7 @@ def scan_command(
         if fleet:
             _run_fleet_scan(
                 fleet_path=bundle_path,
-                output=output,
+                output=output_value,
                 policy_config=policy_config,
                 policy_ref=policy,
                 enforce=enforce,
@@ -344,7 +369,7 @@ def scan_command(
 
         _run_single_scan(
             path=str(bundle_path),
-            output=output,
+            output=output_value,
             policy_config=policy_config,
             enforce=enforce,
             report_file=report_file,
@@ -364,6 +389,16 @@ def scan_command(
     finally:
         if cleanup_path and cleanup_path.exists():
             shutil.rmtree(cleanup_path, ignore_errors=True)
+
+
+def _output_flag_explicitly_set() -> bool:
+    """Return True when user explicitly provided --output/-o on this CLI invocation."""
+    ctx = click.get_current_context(silent=True)
+    if ctx is not None:
+        return ctx.get_parameter_source("output") == ParameterSource.COMMANDLINE
+
+    args = sys.argv[1:]
+    return any(token in {"--output", "-o"} or token.startswith("--output=") for token in args)
 
 
 def _resolve_policy_config(policy: str | None, enforce: bool, quiet: bool) -> PolicyConfig | None:
