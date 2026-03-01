@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "skillgate"
 dynamic = ["version"]
 description = "CLI-first CI/CD policy enforcement tool that scans agent skills for security risks"
-readme = "README.md"
+readme = "README-PYPI.md"
 license = {text = "Proprietary"}
 requires-python = ">=3.10,<3.14"
 authors = [{name = "SkillGate Team"}]
@@ -36,9 +36,9 @@ dependencies = [
 [project.urls]
 Homepage = "https://skillgate.io"
 Documentation = "https://skillgate.io/docs"
-Repository = "https://github.com/skillgate/skillgate"
-Changelog = "https://github.com/skillgate/skillgate/blob/main/CHANGELOG.md"
-Issues = "https://github.com/skillgate/skillgate/issues"
+Repository = "https://github.com/skillgate-io/skillgate"
+Changelog = "https://github.com/skillgate-io/skillgate/blob/main/CHANGELOG.md"
+Issues = "https://github.com/skillgate-io/skillgate/issues"
 
 [project.optional-dependencies]
 watch = [
@@ -80,6 +80,21 @@ otel = [
     "opentelemetry-sdk>=1.20.0",
     "opentelemetry-exporter-otlp-proto-grpc>=1.20.0",
     "opentelemetry-instrumentation-fastapi>=0.41b0",
+]
+sdk = [
+    "httpx>=0.25.0",
+]
+"sdk-pydantic-ai" = [
+    "httpx>=0.25.0",
+    "pydantic-ai>=0.0.14",
+]
+"sdk-langchain" = [
+    "httpx>=0.25.0",
+    "langchain-core>=0.1.0",
+]
+"sdk-crewai" = [
+    "httpx>=0.25.0",
+    "crewai>=0.1.0",
 ]
 dev = [
     "pytest>=7.4.0",
@@ -128,6 +143,10 @@ module = ["tree_sitter", "tree_sitter.*", "tree_sitter_python", "tree_sitter_jav
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
+module = ["pydantic_ai", "pydantic_ai.*", "langchain", "langchain.*", "langchain_core", "langchain_core.*", "crewai", "crewai.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
 disallow_untyped_decorators = false
@@ -161,6 +180,7 @@ omit = [
     "skillgate/api/routes/retroscan.py",
     "skillgate/api/entitlement_teams.py",
     "skillgate/api/routes/audit.py",
+    "skillgate/sdk/py.typed",
 ]
 
 [tool.coverage.report]

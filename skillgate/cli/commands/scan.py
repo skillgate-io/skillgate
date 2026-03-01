@@ -9,14 +9,17 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import NamedTuple
 
+import click
 import httpx
 import typer
+from click.core import ParameterSource
 from rich.console import Console
 
 from skillgate.cli.formatters.human import format_human
 from skillgate.cli.formatters.json_fmt import format_json
 from skillgate.cli.formatters.sarif import format_sarif
 from skillgate.cli.remote import fetch_bundle, is_url, normalize_intake_selector
+from skillgate.cli.scan_submit import submit_scan_report
 from skillgate.config.license import get_api_key
 from skillgate.core.analyzer.engine import analyze_bundle
 from skillgate.core.enricher.engine import enrich_findings
@@ -238,8 +241,36 @@ def scan_command(
         "-m",
         help="Scan mode: default, agent-output, or pre-commit",
     ),
+    submit: bool = typer.Option(
+        False,
+        "--submit",
+        help="Submit scan report to API (/api/v1/scans) using CLI auth bearer token.",
+    ),
 ) -> None:
     """Scan a skill bundle for security risks."""
+    output_value = output.strip().lower()
+    if output_value not in {"human", "json", "sarif"}:
+        if not quiet:
+            console.print(
+                f"[red]Error:[/red] Unknown output format '{output}'. Use human, json, or sarif."
+            )
+        raise typer.Exit(code=3)
+
+    if sign and report_file and output_value == "human":
+        if _output_flag_explicitly_set():
+            if not quiet:
+                console.print(
+                    "[red]Error:[/red] --sign with --report-file requires machine-readable output. "
+                    "Use --output json."
+                )
+            raise typer.Exit(code=3)
+        output_value = "json"
+        if not quiet:
+            console.print(
+                "[yellow]Note:[/yellow] Using --output json because "
+                "--sign and --report-file were set."
+            )
+
     resolved_explain_backend = _resolve_explain_backend(
         explain_source=explain_source,
         llm_provider=llm_provider,
@@ -287,9 +318,13 @@ def scan_command(
                 if not quiet:
                     console.print("[red]Error:[/red] --watch is not supported with --fleet.")
                 raise typer.Exit(code=3)
+            if submit:
+                if not quiet:
+                    console.print("[red]Error:[/red] --submit is not supported with --watch.")
+                raise typer.Exit(code=3)
             _run_watch_mode(
                 str(bundle_path),
-                output,
+                output_value,
                 policy,
                 enforce,
                 quiet,
@@ -309,7 +344,7 @@ def scan_command(
         if fleet:
             _run_fleet_scan(
                 fleet_path=bundle_path,
-                output=output,
+                output=output_value,
                 policy_config=policy_config,
                 policy_ref=policy,
                 enforce=enforce,
@@ -328,12 +363,13 @@ def scan_command(
                 fail_on_any=fail_on_any,
                 fail_on_threshold=fail_on_threshold,
                 fleet_workers=fleet_workers,
+                submit=submit,
             )
             return
 
         _run_single_scan(
             path=str(bundle_path),
-            output=output,
+            output=output_value,
             policy_config=policy_config,
             enforce=enforce,
             report_file=report_file,
@@ -347,11 +383,22 @@ def scan_command(
             explain_mode=explain_mode_value,
             reputation_store=reputation_store,
             reputation_env=reputation_env_value,
+            submit=submit,
         )
 
     finally:
         if cleanup_path and cleanup_path.exists():
             shutil.rmtree(cleanup_path, ignore_errors=True)
+
+
+def _output_flag_explicitly_set() -> bool:
+    """Return True when user explicitly provided --output/-o on this CLI invocation."""
+    ctx = click.get_current_context(silent=True)
+    if ctx is not None:
+        return ctx.get_parameter_source("output") == ParameterSource.COMMANDLINE
+
+    args = sys.argv[1:]
+    return any(token in {"--output", "-o"} or token.startswith("--output=") for token in args)
 
 
 def _resolve_policy_config(policy: str | None, enforce: bool, quiet: bool) -> PolicyConfig | None:
@@ -584,6 +631,7 @@ def _run_single_scan(
     explain_mode: str = "technical",
     reputation_store: str = ".skillgate/reputation/reputation.json",
     reputation_env: str = "ci",
+    submit: bool = False,
 ) -> None:
     """Execute a single scan pass."""
     try:
@@ -645,6 +693,11 @@ def _run_single_scan(
 
         _write_report_output(result.report, output, report_file, quiet, no_color)
 
+        if submit:
+            scan_id = submit_scan_report(report=result.report.model_dump())
+            if not quiet:
+                console.print(f"[green]Submitted scan:[/] {scan_id}")
+
         if enforce and not result.policy_passed:
             raise typer.Exit(code=1)
         return
@@ -695,6 +748,7 @@ def _run_fleet_scan(
     fail_on_any: bool,
     fail_on_threshold: float | None,
     fleet_workers: int,
+    submit: bool,
 ) -> None:
     if output == "sarif":
         if not quiet:
@@ -873,6 +927,11 @@ def _run_fleet_scan(
         )
 
         _write_report_output(report, output, report_file, quiet, no_color)
+
+        if submit:
+            scan_id = submit_scan_report(report=report.model_dump())
+            if not quiet:
+                console.print(f"[green]Submitted scan:[/] {scan_id}")
 
         if (
             (enforce and failed_bundles > 0)

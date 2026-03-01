@@ -1,0 +1,122 @@
+{
+  "name": "skillgate-vscode-extension",
+  "displayName": "SkillGate",
+  "publisher": "skillgate-io",
+  "description": "Protect Claude Code and Codex workflows in VS Code with real-time safety checks and clear policy feedback.",
+  "version": "0.12.1",
+  "icon": "assets/extension-icon.png",
+  "license": "MIT",
+  "homepage": "https://skillgate.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/skillgate-io/skillgate.git"
+  },
+  "bugs": {
+    "url": "https://github.com/skillgate-io/skillgate/issues"
+  },
+  "keywords": [
+    "skillgate",
+    "ai agent security",
+    "prompt injection",
+    "vscode security extension",
+    "claude code",
+    "codex cli",
+    "policy enforcement",
+    "devsecops"
+  ],
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Security",
+    "Linters",
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:skillgate.simulateInvocation",
+    "onCommand:skillgate.openOnboarding",
+    "onCommand:skillgate.generatePrChecklist",
+    "onCommand:skillgate.openApprovalRequest",
+    "workspaceContains:.skillgate.yml",
+    "workspaceContains:skill.json",
+    "workspaceContains:SKILL.md",
+    "workspaceContains:CLAUDE.md",
+    "workspaceContains:AGENTS.md",
+    "workspaceContains:MEMORY.md",
+    "workspaceContains:.claude/hooks/**",
+    "workspaceContains:.claude/commands/**",
+    "workspaceContains:.claude/instructions.md",
+    "workspaceContains:.claude/memory/**"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "skillgate.simulateInvocation",
+        "title": "SkillGate: Simulate Invocation"
+      },
+      {
+        "command": "skillgate.openOnboarding",
+        "title": "SkillGate: Open Setup Panel"
+      },
+      {
+        "command": "skillgate.preflight.retry",
+        "title": "SkillGate: Retry Setup Checks"
+      },
+      {
+        "command": "skillgate.generatePrChecklist",
+        "title": "SkillGate: Generate PR Checklist"
+      },
+      {
+        "command": "skillgate.openApprovalRequest",
+        "title": "SkillGate: Open Approval Request"
+      },
+      {
+        "command": "skillgate.approveInstructionLine",
+        "title": "SkillGate: Approve Instruction Line"
+      },
+      {
+        "command": "skillgate.approveHook",
+        "title": "SkillGate: Approve Hook"
+      }
+    ],
+    "configuration": {
+      "title": "SkillGate",
+      "properties": {
+        "skillgate.binaryPath": {
+          "type": "string",
+          "default": "skillgate",
+          "description": "Path to SkillGate CLI binary"
+        },
+        "skillgate.sidecarUrl": {
+          "type": "string",
+          "default": "http://127.0.0.1:9911",
+          "description": "Local SkillGate sidecar URL"
+        },
+        "skillgate.policyDebounceMs": {
+          "type": "number",
+          "default": 500,
+          "minimum": 100,
+          "description": "Debounce for policy and lint diagnostics"
+        },
+        "skillgate.instructionDebounceMs": {
+          "type": "number",
+          "default": 800,
+          "minimum": 200,
+          "description": "Debounce for instruction file diagnostics"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  }
+}

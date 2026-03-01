@@ -1,6 +1,6 @@
 {
-  "name": "@skillgate/cli",
-  "version": "1.0.0",
+  "name": "@skillgate-io/cli",
+  "version": "1.2.1",
   "description": "Optional npm/npx wrapper for SkillGate CLI (Python core runtime)",
   "license": "UNLICENSED",
   "private": false,
@@ -9,7 +9,8 @@
   },
   "files": [
     "bin/skillgate.js",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "engines": {
     "node": ">=18"

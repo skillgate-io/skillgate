@@ -35,6 +35,10 @@ def _default_steps(skip_web_ui: bool) -> list[GateStep]:
         ),
         GateStep("typecheck", "./venv/bin/mypy --strict skillgate/"),
         GateStep("test", "./venv/bin/pytest"),
+        GateStep(
+            "capability-testbed-contract",
+            "./venv/bin/pytest tests/integration/test_capability_testbed_scripts.py -v",
+        ),
         GateStep("slo-gates", "./venv/bin/pytest -m slow tests/slo/ -v"),
         GateStep(
             "reliability-evidence",
@@ -56,8 +60,10 @@ def _default_steps(skip_web_ui: bool) -> list[GateStep]:
         ),
         GateStep(
             "security",
-            "./venv/bin/python -m pip freeze --exclude-editable > /tmp/requirements-audit.txt && "
-            "./venv/bin/pip-audit --strict -r /tmp/requirements-audit.txt && "
+            "./venv/bin/python -m pip freeze --exclude-editable | "
+            "grep -Ev ' @ (file|https?)://' > /tmp/requirements-audit.txt && "
+            "./venv/bin/pip-audit --strict --disable-pip --no-deps "
+            "-r /tmp/requirements-audit.txt && "
             "(./venv/bin/detect-secrets scan --baseline .secrets.baseline || "
             "./venv/bin/detect-secrets scan)",
         ),
@@ -65,6 +71,7 @@ def _default_steps(skip_web_ui: bool) -> list[GateStep]:
             "ga-decision-gate",
             "./venv/bin/python scripts/quality/check_claim_ledger.py && "
             "./venv/bin/python scripts/quality/check_governance_scope_gate.py && "
+            "./venv/bin/python scripts/quality/check_phase_ship_gates.py --phase phase2 && "
             "./venv/bin/pytest tests/unit/test_hunt/test_cli.py "
             "tests/unit/test_retroscan/test_cli.py -v && "
             "./venv/bin/pytest tests/unit/test_api/test_hunt_api.py "
@@ -188,7 +195,7 @@ def main() -> int:
     results: list[dict[str, object]] = []
     for step in steps:
         print(f"[gate] running {step.name}")
-        code, _ = _run_step(step, log_path=log_path, offline_safe=args.offline_safe)
+        code, _ = _run_step(step, log_file=log_path, offline_safe=args.offline_safe)
         results.append({"name": step.name, "exit_code": code})
         if code != 0:
             break

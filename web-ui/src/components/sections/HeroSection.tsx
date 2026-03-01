@@ -12,6 +12,8 @@ const ThreatTear = dynamic(() => import('@/components/hero/ThreatTear'), {
   loading: () => null,
 });
 
+const DOCS_BASE_URL = (process.env.NEXT_PUBLIC_DOCS_BASE_URL || 'https://docs.skillgate.io').replace(/\/+$/, '');
+
 export function HeroSection() {
   return (
     <section
@@ -23,12 +25,12 @@ export function HeroSection() {
       <div className="pointer-events-none absolute left-1/2 top-4 -translate-x-1/2 opacity-100 lg:hidden">
         <div className="absolute inset-0 -z-10 rounded-[2rem] bg-[radial-gradient(circle,rgba(96,165,250,0.48),rgba(34,197,94,0.15),transparent_72%)] blur-2xl" />
         <Image
-          src="/images/logo.jpg"
+          src="/images/hero-shield.svg"
           alt=""
           aria-hidden="true"
           width={360}
           height={360}
-          className="h-36 w-36 rounded-[1.75rem] border border-white/20 object-cover shadow-[0_45px_130px_rgba(59,130,246,0.58)] sm:h-44 sm:w-44"
+          className="h-36 w-36 rounded-[1.75rem] border border-white/20 object-contain bg-surface-900/40 p-4 shadow-[0_45px_130px_rgba(59,130,246,0.58)] sm:h-44 sm:w-44"
           priority
         />
       </div>
@@ -41,18 +43,27 @@ export function HeroSection() {
         <div className="relative mx-auto max-w-3xl pt-20 text-center sm:pt-24 lg:pt-28">
           {/* Announcement badge */}
           <Badge variant="brand" className="mb-6">
-            AI Agent Safety for Teams
+            Agent Capability Firewall
           </Badge>
 
           <h1 id="hero-heading" className="text-white">
-            Block risky AI agent changes before they ship
-            <span className="block text-emerald-300">From pull requests to production runs</span>
+            Secure Every AI Tool Before It Executes
+            <span className="block text-emerald-300">Runtime Policy Firewall for OpenClaw, Claude Code, Codex CLI & MCP - Block High-Risk Shell, Network & Filesystem Actions in Real Time.</span>
           </h1>
-
-          <p className="mt-6 text-lg leading-8 text-surface-300 sm:text-xl">
-            SkillGate helps your team catch unsafe behavior early, block risky actions,
-            and keep a clear record of what happened and why.
+          
+          <p className="mt-3 text-sm text-surface-400 sm:text-base">
+            Validated on real agent workflows. Full audit trail. Zero friction setup.
           </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-surface-300">
+            {['VS Code Extension', 'Python SDK', 'Claude Code', 'Codex CLI', 'MCP Gateway', 'OpenClaw Gateway'].map((label) => (
+              <span
+                key={label}
+                className="rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
 
           {/* CTA buttons */}
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
@@ -72,11 +83,13 @@ export function HeroSection() {
               className="border-white/70 text-white hover:bg-white/10 active:bg-white/20"
               onClick={() => {
                 trackEvent('docs_click', 'hero_scan_skill');
-                window.location.href = '/docs/get-started';
+                window.location.href = `${DOCS_BASE_URL}/get-started`;
               }}
             >
-              <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.164 6.839 9.49.5.09.682-.218.682-.483 0-.237-.009-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.16 22 16.42 22 12c0-5.523-4.477-10-10-10z" />
+              <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.75 4.75h9.5a2 2 0 012 2v12.5H6.75a2 2 0 01-2-2V4.75z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.75 6.75h2.5a2 2 0 012 2v10.5h-4.5" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h5M8 13h5M8 16h3.5" />
               </svg>
               See Setup Steps
             </Button>
@@ -96,14 +109,18 @@ export function HeroSection() {
               <span className="ml-2 text-xs text-surface-500">Terminal</span>
             </div>
             {/* Terminal content */}
-            <pre className="overflow-x-auto p-4 font-mono text-sm leading-relaxed text-surface-300" aria-label="SkillGate scan terminal output demonstration">
+            <pre
+              tabIndex={0}
+              className="overflow-x-auto p-4 font-mono text-sm leading-relaxed text-surface-300"
+              aria-label="SkillGate scan terminal output demonstration"
+            >
               <code>{`$ skillgate scan ./my-agent-skill --enforce
 
   SkillGate v1.0.0 | Agent Skill Security Scan
 
   Scanning: ./my-agent-skill
   Files:    12 (Python, JS, Shell)
-  Rules:    119 active
+  Rules:    120 active
 
   ⚠  SG-SHELL-001  subprocess.run() with shell=True  main.py:23
   ⚠  SG-NET-001    urllib.request to external URL     fetch.py:45

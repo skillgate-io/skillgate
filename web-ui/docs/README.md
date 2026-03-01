@@ -1,7 +1,20 @@
-# Web Docs Content Notes
+# Web UI Docs Content
 
-This folder stores markdown docs that can be linted in CI.
+Markdown and long-form docs content for the web UI.
 
-Current docs pages are implemented in `src/app/docs`.
+## Purpose
 
-Use this folder for markdown based long-form guides if needed.
+- Support user-centric docs content.
+- Keep release messaging aligned with product pages.
+- Preserve SEO consistency for docs and landing pages.
+
+## Release sync
+
+Before release, verify references against:
+
+- `../docs/Release/RELEASE-CHECKLIST-TEMPLATE.md`
+- `../docs/Release/RELEASE-1.2.0-CHECKLIST.md`
+
+## Demo Artifact
+
+Use [`DEMO-EVIDENCE-VIDEO.md`](./DEMO-EVIDENCE-VIDEO.md) to produce and place the shared proof video for landing page + docs.

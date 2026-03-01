@@ -9,13 +9,13 @@ import type { Metadata } from 'next';
 const SITE_URL = 'https://skillgate.io';
 const SITE_NAME = 'SkillGate';
 const SITE_DESCRIPTION =
-  'Block unsafe agent code before deployment with deterministic policy gates, runtime controls, and signed evidence.';
+  'Protect OpenClaw gateways and local AI agents from malicious skills, unsafe tool actions, instruction injection, config poisoning, and untrusted providers.';
 
 /** Default metadata applied to all pages */
 export const defaultMetadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'SkillGate | Agent Skill Security Governance',
+    default: 'SkillGate | OpenClaw Gateway and AI Agent Runtime Security',
     template: '%s | SkillGate',
   },
   description: SITE_DESCRIPTION,
@@ -32,6 +32,26 @@ export const defaultMetadata: Metadata = {
     'AI agent governance',
     'OpenClaw',
     'MCP security',
+    'Claude Code security',
+    'Codex CLI security',
+    'local AI gateway security',
+    'local AI agent security',
+    'OpenClaw gateway protection',
+    'AGENTS.md injection protection',
+    'configuration safety checks',
+    'runtime policy protection',
+    'tool description injection defense',
+    'trusted provider allowlist',
+    'Codex config poisoning protection',
+    'Claude Code instruction injection protection',
+    'AI agent capability testbed',
+    'OpenClaw security testing',
+    'OpenClaw official skills security testing',
+    'Nanobot skills security testing',
+    'ClawHub skills security testing',
+    'Claude Code security testing',
+    'Codex CLI security testing',
+    'MCP gateway security testing',
   ],
   authors: [{ name: SITE_NAME, url: SITE_URL }],
   creator: SITE_NAME,
@@ -42,7 +62,7 @@ export const defaultMetadata: Metadata = {
     locale: 'en_US',
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: 'SkillGate | Agent Skill Security Governance',
+    title: 'SkillGate | OpenClaw Gateway and AI Agent Runtime Security',
     description: SITE_DESCRIPTION,
     images: [
       {
@@ -57,7 +77,7 @@ export const defaultMetadata: Metadata = {
   // 16.16: Twitter Cards
   twitter: {
     card: 'summary_large_image',
-    title: 'SkillGate | Agent Skill Security Governance',
+    title: 'SkillGate | OpenClaw Gateway and AI Agent Runtime Security',
     description: SITE_DESCRIPTION,
     images: [`${SITE_URL}/og`],
   },
@@ -78,6 +98,11 @@ export const defaultMetadata: Metadata = {
   // 16.16: Canonical
   alternates: {
     canonical: SITE_URL,
+  },
+
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
   },
 
   // Verification (populate when accounts are set up)
@@ -122,6 +147,14 @@ export function softwareApplicationJsonLd(): string {
     operatingSystem: 'Cross-platform',
     description: SITE_DESCRIPTION,
     url: SITE_URL,
+    featureList: [
+      'Runtime tool-call enforcement for shell, filesystem, and network actions',
+      'OpenClaw and local AI agent gateway protection',
+      'Claude Code instruction and settings governance',
+      'Codex CLI startup safety checks and provider trust controls',
+      'MCP provider allowlist, metadata safety, and permission drift detection',
+      'Signed security evidence for CI and audit workflows',
+    ],
     offers: [
       {
         '@type': 'Offer',
@@ -161,7 +194,7 @@ export function faqJsonLd(): string {
     {
       question: 'Which languages does SkillGate support?',
       answer:
-        'SkillGate supports 7 languages: Python, JavaScript, TypeScript, Shell/Bash, Go, Rust, and Ruby, with 119 detection rules.',
+        'SkillGate supports 7 languages: Python, JavaScript, TypeScript, Shell/Bash, Go, Rust, and Ruby, with 120 detection rules.',
     },
     {
       question: 'Does SkillGate execute my code?',
@@ -172,6 +205,21 @@ export function faqJsonLd(): string {
       question: 'How does SkillGate integrate with CI/CD?',
       answer:
         'SkillGate provides integrations for GitHub Actions, GitLab CI, and Bitbucket Pipelines. It can block PRs on policy failures and upload SARIF to GitHub Security.',
+    },
+    {
+      question: 'Does SkillGate support Claude Code and Codex CLI?',
+      answer:
+        'Yes. SkillGate protects Claude Code and Codex CLI workflows with policy checks before risky commands run.',
+    },
+    {
+      question: 'Can SkillGate protect OpenClaw and other local AI agents?',
+      answer:
+        'Yes. SkillGate can wrap agent CLI execution paths and apply the same runtime checks for OpenClaw and similar local AI agent runtimes.',
+    },
+    {
+      question: 'How is SkillGate tested for real agent behavior?',
+      answer:
+        'SkillGate runs capability testbed regressions built from public agent skill repositories and app examples to verify policy decisions against realistic tool-call patterns.',
     },
     {
       question: 'What are signed attestations?',
