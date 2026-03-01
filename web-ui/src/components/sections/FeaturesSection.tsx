@@ -18,13 +18,15 @@ const FEATURES: Feature[] = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
       </svg>
     ),
-    title: 'Runtime Guardrails',
-    description: 'Block unsafe tool actions before agent commands run.',
+    title: 'Runtime Sidecar Enforcement',
+    description: 'Block risky tool actions before they run across editor, local, and CI workflows.',
     details: [
-      'AI-BOM validation and output-poisoning checks',
-      'Approval requirements and signed enforcement records',
-      'Capability budgets for shell, network, and filesystem',
-      'Predictable allow/block outcomes with machine-readable codes',
+      'Checks shell, network, and file actions before execution',
+      'Applies team policy consistently across environments',
+      'Returns clear allow or block outcomes with reasons',
+      'Powers VS Code extension preflight and Python SDK @enforce decisions',
+      'Continuously validated with capability testbed corpora built from real-world agent repos',
+      'Keeps security overhead low for developer workflows',
     ],
   },
   {
@@ -33,13 +35,13 @@ const FEATURES: Feature[] = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
       </svg>
     ),
-    title: 'Trust and Blast Radius Mapping',
-    description: 'See where risk can spread before one bad action turns into a larger incident.',
+    title: 'Auth and Offline License Modes',
+    description: 'Keep protections reliable with secure sessions and safe fallback behavior.',
     details: [
-      'Privilege depth and high-risk path counts',
-      'Lateral movement potential and blast radius',
-      'Secret exposure spread across lineage edges',
-      'Signed artifact verification with consistent risk metrics',
+      'Verifies active access before sensitive operations',
+      'Supports limited-connectivity scenarios without silent bypass',
+      'Matches runtime limits to your active plan',
+      'Stores credentials safely in normal operation',
     ],
   },
   {
@@ -48,13 +50,13 @@ const FEATURES: Feature[] = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
       </svg>
     ),
-    title: 'Fleet Policy Coverage',
-    description: 'Check many repos with one standard policy and clear rollout visibility.',
+    title: 'MCP Gateway for Claude Code',
+    description: 'Protect MCP tool paths before requests reach external providers.',
     details: [
-      'Fleet-wide scanning with predictable bundle discovery',
-      'Fail-rate thresholds for CI rollout controls',
-      'Fleet baseline and drift comparison workflows',
-      'Remote repository intake across major source platforms',
+      'Approves trusted providers and blocks unknown sources',
+      'Flags risky tool metadata before model exposure',
+      'Detects permission changes that exceed approved scope',
+      'Maintains an auditable trust history for integrations',
     ],
   },
   {
@@ -63,13 +65,13 @@ const FEATURES: Feature[] = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
       </svg>
     ),
-    title: 'Policy Rollout Simulation',
-    description: 'Preview rollout impact before changing rules across live projects.',
+    title: 'Claude Ecosystem Governance',
+    description: 'Protect Claude workspaces from unsafe configuration and prompt injection.',
     details: [
-      'Organization-level fail-rate and noise summaries',
-      'Top violations ranked for fast remediation',
-      'Stable JSON outputs for dashboards',
-      'Supports local and provider selectors',
+      'Scans instruction files such as CLAUDE.md and AGENTS.md',
+      'Checks hooks and plugins before risky capabilities are allowed',
+      'Tracks configuration changes that impact safety posture',
+      'Helps teams investigate and remediate incidents quickly',
     ],
   },
   {
@@ -78,13 +80,13 @@ const FEATURES: Feature[] = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v3.75m0-10.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.75c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285zM12 15.75h.008v.008H12v-.008z" />
       </svg>
     ),
-    title: 'Signed Intelligence Feed',
-    description: 'Share trusted threat signals without slowing your delivery workflow.',
+    title: 'Codex Bridge and CI Guard Mode',
+    description: 'Run Codex safely with policy checks and strict CI defaults.',
     details: [
-      'Signed reputation verification and controlled submission workflows',
-      'Known-safe, suspicious, and malicious verdicts',
-      'Redacted hash handling in runtime policy decisions',
-      'Offline-first cache integrity verification',
+      'Runs Codex through SkillGate safety checks by default',
+      'Blocks unexpected config changes before execution',
+      'Requires re-approval when provider binaries change',
+      'Prevents silent expansion of trusted commands and providers',
     ],
   },
   {
@@ -93,13 +95,13 @@ const FEATURES: Feature[] = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
       </svg>
     ),
-    title: 'CI Enforcement and Audit Proof',
-    description: 'Keep releases safer with clear pass/fail results and shareable evidence.',
+    title: 'Signed Audit Proof for Compliance',
+    description: 'Generate records your security and compliance teams can trust.',
     details: [
-      'Stable exit codes and policy resolution order',
-      'JSON and SARIF outputs for CI and security tooling',
-      'Signed scan and session artifacts for legal/audit trails',
-      'Clear scoring and no hidden decision logic',
+      'Exports JSON and SARIF for existing security tools',
+      'Signs scan and runtime records for audit confidence',
+      'Preserves action history for incident response',
+      'Provides remediation context for blocked operations',
     ],
   },
 ];
@@ -140,7 +142,7 @@ export function FeaturesSection() {
             Why teams pick SkillGate
           </h2>
           <p className="mt-4 text-lg text-surface-300">
-            One clear workflow from scan to release, with practical controls teams can trust.
+            One control plane from static scan to runtime enforcement, built for agent security teams.
           </p>
         </div>
 

@@ -23,6 +23,7 @@
     "docs:lint:links": "node scripts/check-doc-links.mjs",
     "docs:lint:snippets": "node scripts/check-doc-snippets.mjs",
     "docs:lint:markdown": "node scripts/lint-markdown.mjs",
+    "docs:health": "node scripts/check-docs-health.mjs",
     "docs:api:sync": "node scripts/generate-api-docs.mjs",
     "docs:api:check": "node scripts/check-api-docs-sync.mjs",
     "docs:check": "npm run docs:lint:markdown && npm run docs:lint:links && npm run docs:lint:snippets && npm run docs:api:check",

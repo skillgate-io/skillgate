@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useScans } from '@/lib/hooks/use-dashboard';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { PageHeader } from '@/components/dashboard/PageHeader';
@@ -9,12 +10,14 @@ import { DataTable, type Column } from '@/components/dashboard/DataTable';
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { TierGate } from '@/components/dashboard/TierGate';
 import { Button } from '@/components/ui/Button';
+import { docsUrl, useDocsBaseUrl } from '@/lib/docs-links';
 import type { ScanListItem } from '@/lib/types/dashboard';
 
 const PAGE_SIZE = 20;
 
 export default function ScansPage() {
   const { user } = useAuth();
+  const docsBaseUrl = useDocsBaseUrl();
   const tier = user?.tier || 'free';
   const [offset, setOffset] = useState(0);
 
@@ -79,6 +82,31 @@ export default function ScansPage() {
       header: 'Date',
       render: (s) => new Date(s.stored_at).toLocaleDateString(),
     },
+    {
+      key: 'view',
+      header: 'View',
+      render: (s) => (
+        <Link
+          href={`/dashboard/scans/${encodeURIComponent(s.scan_id)}`}
+          className="inline-flex items-center rounded-md border border-white/20 px-2 py-1 text-xs text-surface-300 hover:border-brand-500 hover:text-brand-300"
+          aria-label={`View scan ${s.scan_id}`}
+        >
+          <svg
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        </Link>
+      ),
+    },
   ];
 
   if (!isLoading && scans.length === 0) {
@@ -89,9 +117,30 @@ export default function ScansPage() {
           title="No scans yet"
           description="Run your first scan from the CLI to see results here."
           action={
-            <code className="rounded-lg border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-brand-400">
-              pip install skillgate && skillgate scan ./skill
-            </code>
+            <div className="space-y-2">
+              <code className="rounded-lg border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-brand-400">
+                pip install skillgate && skillgate scan ./skill
+              </code>
+              <div className="flex items-center justify-center gap-3 text-xs text-surface-500">
+                <span>Open docs:</span>
+                <a
+                  href={docsUrl(docsBaseUrl, '/rules')}
+                  className="text-brand-300 hover:text-brand-200"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Rules
+                </a>
+                <a
+                  href={docsUrl(docsBaseUrl, '/policy')}
+                  className="text-brand-300 hover:text-brand-200"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Policy
+                </a>
+              </div>
+            </div>
           }
         />
       </div>
@@ -104,6 +153,26 @@ export default function ScansPage() {
         title="Scans"
         description={`${total} scan${total !== 1 ? 's' : ''} recorded.`}
       />
+
+      <div className="flex flex-wrap items-center gap-4 text-xs text-surface-500">
+        <span>Need help interpreting results?</span>
+        <a
+          href={docsUrl(docsBaseUrl, '/rules')}
+          className="text-brand-300 hover:text-brand-200"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Rule Catalog
+        </a>
+        <a
+          href={docsUrl(docsBaseUrl, '/policy')}
+          className="text-brand-300 hover:text-brand-200"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Policy Reference
+        </a>
+      </div>
 
       <DataTable
         columns={columns}

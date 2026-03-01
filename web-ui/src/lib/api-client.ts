@@ -63,6 +63,11 @@ export interface EmailVerificationRequestResponse {
   verification_token?: string;
 }
 
+export interface PasswordResetRequestResponse {
+  status: string;
+  reset_token?: string;
+}
+
 /** Checkout request matching backend CheckoutRequest model */
 export interface CheckoutRequest {
   tier: 'pro' | 'team' | 'enterprise';
@@ -382,6 +387,7 @@ import type {
   APIKeyCreateResponse,
   UsageMetrics,
   ScanListResponse,
+  ScanDetailResponse,
   CustomerPortalResponse,
 } from '@/lib/types/dashboard';
 
@@ -406,6 +412,27 @@ export async function requestEmailVerification(email: string): Promise<EmailVeri
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email }),
+  }, 0);
+}
+
+/** Request password reset token/email for an account. */
+export async function requestPasswordReset(email: string): Promise<PasswordResetRequestResponse> {
+  return apiCall<PasswordResetRequestResponse>(`${API_BASE}/auth/password-reset/request`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  }, 0);
+}
+
+/** Confirm password reset with reset token and new password. */
+export async function confirmPasswordReset(
+  token: string,
+  newPassword: string,
+): Promise<{ status: string }> {
+  return apiCall<{ status: string }>(`${API_BASE}/auth/password-reset/confirm`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, new_password: newPassword }),
   }, 0);
 }
 
@@ -510,6 +537,17 @@ export async function listScans(
     },
     1,
   );
+}
+
+/** Get a single stored scan by id. */
+export async function getScan(
+  accessToken: string,
+  scanId: string,
+): Promise<ScanDetailResponse> {
+  return apiCall<ScanDetailResponse>(`${API_BASE}/scans/${encodeURIComponent(scanId)}`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${accessToken}` },
+  }, 1);
 }
 
 // --- Billing ---

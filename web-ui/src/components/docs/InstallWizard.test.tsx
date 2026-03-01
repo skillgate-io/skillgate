@@ -38,12 +38,12 @@ const installSpecFixture: InstallSpec = {
     npm_shim: {
       tier: 'experimental',
       platforms: ['macos', 'linux', 'windows', 'wsl'],
-      install_latest: 'npm install -g @skillgate/cli',
-      install_stable: 'npm install -g @skillgate/cli',
-      install_pinned: 'npm install -g @skillgate/cli@{version}',
+      install_latest: 'npm install -g @skillgate-io/cli',
+      install_stable: 'npm install -g @skillgate-io/cli',
+      install_pinned: 'npm install -g @skillgate-io/cli@{version}',
       verify: 'skillgate version',
-      uninstall: 'npm uninstall -g @skillgate/cli',
-      upgrade: 'npm install -g @skillgate/cli@latest',
+      uninstall: 'npm uninstall -g @skillgate-io/cli',
+      upgrade: 'npm install -g @skillgate-io/cli@latest',
     },
   },
 };
@@ -74,9 +74,9 @@ describe('InstallWizard', () => {
     const channelSelect = screen.getByLabelText('Channel');
     fireEvent.change(channelSelect, { target: { value: 'npm_shim' } });
 
-    expect(screen.getByText('npm install -g @skillgate/cli')).toBeVisible();
+    expect(screen.getByText('npm install -g @skillgate-io/cli')).toBeVisible();
     expect(
-      screen.getByText('npx @skillgate/cli scan ./my-agent-skill --enforce --policy production'),
+      screen.getByText('npx @skillgate-io/cli scan ./my-agent-skill --enforce --policy production'),
     ).toBeVisible();
   });
 });

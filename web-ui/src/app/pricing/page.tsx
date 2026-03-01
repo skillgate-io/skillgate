@@ -30,7 +30,7 @@ export default function PricingPage() {
             {[
               {
                 q: 'Can I try SkillGate before paying?',
-                a: 'Yes. Free includes 3 scans per day and no credit card is required. Install with `pipx install skillgate` or `npx @skillgate/cli version` and run your first scan right away.',
+                a: 'Yes. Free includes 3 scans per day and no credit card is required. Install with `pipx install skillgate` or `npx @skillgate-io/cli version` and run your first scan right away.',
               },
               {
                 q: 'What happens when I exceed the Free tier limit?',

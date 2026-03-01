@@ -30,10 +30,10 @@ skillgate version`}
         />
         <p className="font-semibold text-white">NPX path (quick onboarding)</p>
         <CodeBlock
-          code={`npm install -g @skillgate/cli
+          code={`npm install -g @skillgate-io/cli
 skillgate version
 # one-off without global install:
-npx @skillgate/cli version`}
+npx @skillgate-io/cli version`}
         />
       </DocsBlock>
 

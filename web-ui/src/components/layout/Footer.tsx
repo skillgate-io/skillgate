@@ -1,16 +1,18 @@
 /* Footer with nav links, legal, and social */
 import Link from 'next/link';
 
+const DOCS_BASE_URL = (process.env.NEXT_PUBLIC_DOCS_BASE_URL || 'https://docs.skillgate.io').replace(/\/+$/, '');
+
 const FOOTER_LINKS = {
   Product: [
     { label: 'Features', href: '/features' },
     { label: 'Pricing', href: '/pricing' },
     { label: 'Roadmap', href: '/roadmap' },
-    { label: 'Documentation', href: '/docs' },
-    { label: 'Migrations & Changelog', href: '/docs/migrations' },
+    { label: 'Documentation', href: `${DOCS_BASE_URL}`, external: true },
+    { label: 'Migrations & Changelog', href: `${DOCS_BASE_URL}/migrations`, external: true },
   ],
   Resources: [
-    { label: 'GitHub', href: 'https://github.com/skillgate/skillgate', external: true },
+    { label: 'GitHub', href: 'https://github.com/skillgate-io/skillgate', external: true },
     { label: 'PyPI', href: 'https://pypi.org/project/skillgate/', external: true },
     { label: 'Docker Hub', href: 'https://hub.docker.com/r/skillgate/skillgate', external: true },
     { label: 'GitHub Action', href: 'https://github.com/marketplace/actions/skillgate-scan', external: true },
@@ -20,7 +22,7 @@ const FOOTER_LINKS = {
     { label: 'Privacy Policy', href: '/privacy' },
     { label: 'Terms of Service', href: '/terms' },
     { label: 'Contact', href: '/contact' },
-    { label: 'Legal Center', href: '/docs/legal' },
+    { label: 'Legal Center', href: `${DOCS_BASE_URL}/legal`, external: true },
     { label: 'DPA Template', href: '/legal/dpa-template' },
     { label: 'Security Addendum', href: '/legal/security-addendum-template' },
   ],

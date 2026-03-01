@@ -29,6 +29,8 @@ import {
   type PricingExperimentSource,
 } from '@/lib/pricing-experiment';
 
+const DOCS_BASE_URL = (process.env.NEXT_PUBLIC_DOCS_BASE_URL || 'https://docs.skillgate.io').replace(/\/+$/, '');
+
 export function PricingSection() {
   const frontendBetaFreeOnboardingEnabled =
     (process.env.NEXT_PUBLIC_PRICING_BETA_FREE_CTA || '').toLowerCase() === 'true';
@@ -670,7 +672,11 @@ function PricingCard({
         pricing_variant: variant,
         pricing_variant_source: variantSource,
       });
-      router.push(isAuthenticated ? '/docs/get-started' : '/signup');
+      if (isAuthenticated) {
+        window.location.href = `${DOCS_BASE_URL}/get-started`;
+      } else {
+        router.push('/signup');
+      }
       return;
     }
 
@@ -687,7 +693,11 @@ function PricingCard({
 
     // Free tier — start onboarding/auth flow
     if (tier.id === 'free') {
-      router.push(isAuthenticated ? '/docs/get-started' : '/signup');
+      if (isAuthenticated) {
+        window.location.href = `${DOCS_BASE_URL}/get-started`;
+      } else {
+        router.push('/signup');
+      }
       return;
     }
 
@@ -1030,7 +1040,7 @@ function DeepComparisonMatrix({
       <div className="mt-5 flex flex-wrap gap-3 text-xs text-surface-400">
         <Link
           className="rounded-full border border-white/10 px-3 py-1 hover:border-white/25 hover:text-white"
-          href="/docs/enterprise/procurement"
+          href={`${DOCS_BASE_URL}/enterprise/procurement`}
           onClick={() =>
             trackEvent('pricing_matrix_link_click', 'enterprise_procurement_guide', {
               pricing_variant: variant,
@@ -1042,7 +1052,7 @@ function DeepComparisonMatrix({
         </Link>
         <Link
           className="rounded-full border border-white/10 px-3 py-1 hover:border-white/25 hover:text-white"
-          href="/docs/enterprise/compliance"
+          href={`${DOCS_BASE_URL}/enterprise/compliance`}
           onClick={() =>
             trackEvent('pricing_matrix_link_click', 'enterprise_compliance_modes', {
               pricing_variant: variant,
@@ -1054,7 +1064,7 @@ function DeepComparisonMatrix({
         </Link>
         <Link
           className="rounded-full border border-white/10 px-3 py-1 hover:border-white/25 hover:text-white"
-          href="/docs/enterprise/deployment"
+          href={`${DOCS_BASE_URL}/enterprise/deployment`}
           onClick={() =>
             trackEvent('pricing_matrix_link_click', 'enterprise_deployment_models', {
               pricing_variant: variant,

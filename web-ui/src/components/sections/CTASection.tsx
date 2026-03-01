@@ -4,6 +4,8 @@
 import { Button } from '@/components/ui/Button';
 import { trackEvent } from '@/lib/analytics';
 
+const DOCS_BASE_URL = (process.env.NEXT_PUBLIC_DOCS_BASE_URL || 'https://docs.skillgate.io').replace(/\/+$/, '');
+
 export function CTASection() {
   return (
     <section
@@ -13,10 +15,13 @@ export function CTASection() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_10%,rgba(76,110,245,0.18),transparent_35%),radial-gradient(circle_at_78%_80%,rgba(16,185,129,0.18),transparent_35%)]" />
       <div className="mx-auto max-w-content px-4 text-center sm:px-6 lg:px-8">
         <h2 id="cta-heading" className="text-3xl font-bold text-white sm:text-4xl">
-          Start safer AI agent releases today
+          Ship Claude Code and Codex workflows with guardrails
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-lg text-surface-300">
-          Install in minutes, run your first protected scan, and share results your team can trust.
+          Start with runtime protections locally, then enforce the same guardrails for MCP and Codex in CI.
+        </p>
+        <p className="mx-auto mt-3 max-w-2xl text-sm text-surface-400">
+          Built on regression testbeds that replay capability patterns from large public agent skill collections.
         </p>
 
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
@@ -37,7 +42,7 @@ export function CTASection() {
             className="border-white/30 text-white hover:bg-white/10"
             onClick={() => {
               trackEvent('docs_click', 'bottom_cta');
-              window.location.href = '/docs/get-started';
+              window.location.href = `${DOCS_BASE_URL}/get-started`;
             }}
           >
             See Setup Steps

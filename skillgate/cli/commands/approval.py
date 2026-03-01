@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime, timezone
 from pathlib import Path
+from uuid import uuid4
 
 import typer
 
@@ -86,3 +88,54 @@ def approval_verify_command(
         )
     )
     raise typer.Exit(code=0 if decision.allowed else 1)
+
+
+def approval_request_command(
+    decision_code: str = typer.Option(
+        ...,
+        "--decision-code",
+        help="Decision code that triggered approval workflow.",
+    ),
+    invocation_id: str = typer.Option(
+        ...,
+        "--invocation-id",
+        help="Invocation identifier that requires approval.",
+    ),
+    reason: list[str] | None = typer.Option(  # noqa: B008
+        None,
+        "--reason",
+        help="Reason code for approval requirement. Repeat for multiple values.",
+    ),
+    output_dir: str = typer.Option(
+        ".skillgate/approvals/requests",
+        "--output-dir",
+        help="Directory where request files are written.",
+    ),
+) -> None:
+    """Create a local approval request artifact for IDE/CLI workflows."""
+    approval_id = f"apr-{uuid4().hex[:12]}"
+    now = datetime.now(tz=timezone.utc).replace(microsecond=0).isoformat()
+    payload = {
+        "approval_id": approval_id,
+        "status": "pending",
+        "decision_code": decision_code,
+        "invocation_id": invocation_id,
+        "reasons": sorted(set(reason or [])),
+        "created_at": now,
+    }
+
+    request_dir = Path(output_dir)
+    request_dir.mkdir(parents=True, exist_ok=True)
+    path = request_dir / f"{approval_id}.json"
+    path.write_text(
+        json.dumps(payload, sort_keys=True, separators=(",", ":")),
+        encoding="utf-8",
+    )
+
+    typer.echo(
+        json.dumps(
+            {"approval_id": approval_id, "status": "pending", "path": str(path)},
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+    )
