@@ -3,8 +3,8 @@
   "displayName": "SkillGate",
   "publisher": "skillgate-io",
   "description": "Protect Claude Code and Codex workflows in VS Code with real-time safety checks and clear policy feedback.",
-  "version": "0.12.1",
-  "icon": "assets/extension-icon.png",
+  "version": "0.12.2",
+  "icon": "assets/extension-icon-square-512.png",
   "license": "MIT",
   "homepage": "https://skillgate.io",
   "repository": {
@@ -37,8 +37,14 @@
     "onStartupFinished",
     "onCommand:skillgate.simulateInvocation",
     "onCommand:skillgate.openOnboarding",
+    "onCommand:skillgate.initPolicyFile",
+    "onCommand:skillgate.scanWorkspace",
+    "onCommand:skillgate.submitScanReport",
     "onCommand:skillgate.generatePrChecklist",
     "onCommand:skillgate.openApprovalRequest",
+    "onCommand:skillgate.signApproval",
+    "onCommand:skillgate.verifyApproval",
+    "onCommand:skillgate.openApprovalCenter",
     "workspaceContains:.skillgate.yml",
     "workspaceContains:skill.json",
     "workspaceContains:SKILL.md",
@@ -69,8 +75,32 @@
         "title": "SkillGate: Generate PR Checklist"
       },
       {
+        "command": "skillgate.scanWorkspace",
+        "title": "SkillGate: Scan Workspace"
+      },
+      {
+        "command": "skillgate.submitScanReport",
+        "title": "SkillGate: Submit Scan Report"
+      },
+      {
+        "command": "skillgate.initPolicyFile",
+        "title": "SkillGate: Initialize Policy File"
+      },
+      {
         "command": "skillgate.openApprovalRequest",
         "title": "SkillGate: Open Approval Request"
+      },
+      {
+        "command": "skillgate.signApproval",
+        "title": "SkillGate: Sign Approval (Guided)"
+      },
+      {
+        "command": "skillgate.verifyApproval",
+        "title": "SkillGate: Verify Approval (Guided)"
+      },
+      {
+        "command": "skillgate.openApprovalCenter",
+        "title": "SkillGate: Open Approval Center"
       },
       {
         "command": "skillgate.approveInstructionLine",
@@ -92,7 +122,23 @@
         "skillgate.sidecarUrl": {
           "type": "string",
           "default": "http://127.0.0.1:9911",
-          "description": "Local SkillGate sidecar URL"
+          "description": "Expert override: explicit local SkillGate sidecar URL. When set, overrides sidecar mode and port settings."
+        },
+        "skillgate.sidecarMode": {
+          "type": "string",
+          "default": "shared",
+          "enum": [
+            "shared",
+            "managed-isolation"
+          ],
+          "markdownDescription": "Sidecar routing mode. `shared` uses one sidecar endpoint for all projects. `managed-isolation` auto-selects a deterministic per-workspace port."
+        },
+        "skillgate.sidecarBasePort": {
+          "type": "number",
+          "default": 9911,
+          "minimum": 1024,
+          "maximum": 65535,
+          "description": "Base port used for shared mode and as the seed for managed-isolation port selection."
         },
         "skillgate.policyDebounceMs": {
           "type": "number",
@@ -107,7 +153,41 @@
           "description": "Debounce for instruction file diagnostics"
         }
       }
-    }
+    },
+    "walkthroughs": [
+      {
+        "id": "skillgate.getStarted",
+        "title": "SkillGate Guided Flow",
+        "description": "Enterprise-ready in-editor flow: setup, policy, simulation, checklist, approvals.",
+        "steps": [
+          {
+            "id": "step.setup",
+            "title": "Open Setup Panel",
+            "description": "Run [SkillGate: Open Setup Panel](command:skillgate.openOnboarding) and get all checks green."
+          },
+          {
+            "id": "step.policy",
+            "title": "Initialize Policy",
+            "description": "Run [SkillGate: Initialize Policy File](command:skillgate.initPolicyFile) to create baseline policy."
+          },
+          {
+            "id": "step.simulate",
+            "title": "Run Simulation",
+            "description": "Run [SkillGate: Simulate Invocation](command:skillgate.simulateInvocation) to preview runtime decision impact."
+          },
+          {
+            "id": "step.checklist",
+            "title": "Generate PR Checklist",
+            "description": "Run [SkillGate: Generate PR Checklist](command:skillgate.generatePrChecklist). It copies checklist and opens markdown preview."
+          },
+          {
+            "id": "step.approvals",
+            "title": "Process Approvals",
+            "description": "Open [SkillGate: Open Approval Center](command:skillgate.openApprovalCenter), then use guided sign and verify commands."
+          }
+        ]
+      }
+    ]
   },
   "scripts": {
     "build": "tsc -p .",

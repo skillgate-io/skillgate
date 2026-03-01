@@ -16,11 +16,21 @@ function nextStepText(state: PreflightState): string {
   return 'Setup complete. Runtime features are ready.';
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
 function html(state: PreflightState, logoUri: string): string {
+  const sidecarTarget = state.sidecarUrl ?? 'http://127.0.0.1:9911';
   const rows = [
     ['SkillGate CLI', state.cliInstalled],
     ['Authenticated session', state.authenticated],
-    ['Local sidecar (127.0.0.1:9911)', state.sidecarRunning],
+    [`Local sidecar (${sidecarTarget})`, state.sidecarRunning],
   ];
   const rowHtml = rows
     .map(
@@ -28,6 +38,37 @@ function html(state: PreflightState, logoUri: string): string {
         `<tr><td>${label}</td><td><span style="font-weight:600;color:${asColor(Boolean(ok))}">${asBadge(Boolean(ok))}</span></td></tr>`,
     )
     .join('');
+  const guidedSteps = state.guided?.steps ?? [];
+  const guidedHtml =
+    guidedSteps.length === 0
+      ? ''
+      : `<div style="margin-top:14px;padding-top:10px;border-top:1px solid #1f2937;">
+          <p style="margin:0 0 8px;font-weight:600;color:#a7f3d0;">Guided flow</p>
+          <ul style="margin:0 0 8px 18px;padding:0;">
+            ${guidedSteps
+              .map(
+                (step) =>
+                  `<li style="margin:4px 0;opacity:${step.done ? '0.95' : '0.85'};">${step.done ? '✓' : '○'} ${escapeHtml(step.label)}</li>`,
+              )
+              .join('')}
+          </ul>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px;">
+            ${guidedSteps
+              .map(
+                (step) =>
+                  `<button class="guided-step" data-command="${escapeHtml(step.command)}">${step.done ? 'Re-run' : 'Run'} ${escapeHtml(step.label)}</button>`,
+              )
+              .join('')}
+          </div>
+          <p style="margin:0 0 8px;opacity:.8;font-size:12px;">
+            PR checklist is a reviewer artifact. Use Approval Center only when simulation/policy requires approval.
+          </p>
+          ${
+            state.guided?.nextActionCommand && state.guided?.nextActionLabel
+              ? `<button id="guided" data-command="${escapeHtml(state.guided.nextActionCommand)}">${escapeHtml(state.guided.nextActionLabel)}</button>`
+              : '<p style="margin:0;opacity:.8;">All guided steps complete.</p>'
+          }
+        </div>`;
 
   return `<!doctype html>
 <html>
@@ -54,6 +95,12 @@ function html(state: PreflightState, logoUri: string): string {
       <table style="border-collapse: collapse; width: 100%; max-width: 640px;">
         <tbody>${rowHtml}</tbody>
       </table>
+      ${guidedHtml}
+      ${
+        state.authSummary
+          ? `<p style="margin-top:12px;opacity:.9;">Authenticated user: <span style="color:#a7f3d0;font-weight:600;">${escapeHtml(state.authSummary)}</span></p>`
+          : ''
+      }
       <p style="margin-top:12px;opacity:.8;">Last checked: ${state.checkedAt}</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap; margin-top: 14px;">
         <button id="retry">Retry Checks</button>
@@ -64,6 +111,9 @@ function html(state: PreflightState, logoUri: string): string {
       <p style="margin-top:10px;opacity:.8;">
         Install guide: <a href="${state.cliInstallHint}" style="color:#34d399;">${state.cliInstallHint}</a>
       </p>
+      <p style="margin-top:8px;opacity:.65;font-size:12px;">
+        Status auto-refreshes every few seconds while this panel is open.
+      </p>
     </div>
     <script>
       const vscode = acquireVsCodeApi();
@@ -71,6 +121,23 @@ function html(state: PreflightState, logoUri: string): string {
       document.getElementById('install').addEventListener('click', () => vscode.postMessage({ type: 'install-cli' }));
       document.getElementById('login').addEventListener('click', () => vscode.postMessage({ type: 'login' }));
       document.getElementById('sidecar').addEventListener('click', () => vscode.postMessage({ type: 'start-sidecar' }));
+      const guided = document.getElementById('guided');
+      if (guided) {
+        guided.addEventListener('click', () =>
+          vscode.postMessage({
+            type: 'guided-next',
+            command: guided.getAttribute('data-command') || '',
+          }),
+        );
+      }
+      document.querySelectorAll('.guided-step').forEach((button) => {
+        button.addEventListener('click', () =>
+          vscode.postMessage({
+            type: 'guided-next',
+            command: button.getAttribute('data-command') || '',
+          }),
+        );
+      });
     </script>
   </body>
 </html>`;
@@ -80,10 +147,11 @@ export function openOnboardingPanel(
   extensionUri: vscode.Uri,
   state: PreflightState,
   handlers: {
-    onRetry: () => void;
-    onInstallCli: () => void;
-    onLogin: () => void;
-    onStartSidecar: () => void;
+    onRetry: () => PreflightState | Promise<PreflightState>;
+    onInstallCli: () => void | Promise<void>;
+    onLogin: () => void | Promise<void>;
+    onStartSidecar: () => void | Promise<void>;
+    onGuidedNext?: (command: string) => void | Promise<void>;
   },
 ): vscode.WebviewPanel {
   const panel = vscode.window.createWebviewPanel(
@@ -98,22 +166,62 @@ export function openOnboardingPanel(
   const logoUri = panel.webview
     .asWebviewUri(vscode.Uri.joinPath(extensionUri, 'assets', 'extension-icon.png'))
     .toString();
-  panel.webview.html = html(state, logoUri);
-  panel.webview.onDidReceiveMessage((event) => {
+  let latestState = state;
+  let refreshInFlight = false;
+  const refreshState = async (): Promise<PreflightState> => {
+    if (refreshInFlight) {
+      return latestState;
+    }
+    refreshInFlight = true;
+    try {
+      latestState = await handlers.onRetry();
+      panel.webview.html = html(latestState, logoUri);
+      return latestState;
+    } finally {
+      refreshInFlight = false;
+    }
+  };
+
+  panel.webview.html = html(latestState, logoUri);
+
+  const intervalHandle = setInterval(() => {
+    void refreshState();
+  }, 3000);
+  panel.onDidDispose(() => {
+    clearInterval(intervalHandle);
+  });
+
+  panel.webview.onDidReceiveMessage(async (event) => {
     if (event.type === 'retry') {
-      handlers.onRetry();
+      await refreshState();
       return;
     }
     if (event.type === 'install-cli') {
-      handlers.onInstallCli();
+      await handlers.onInstallCli();
+      setTimeout(() => {
+        void refreshState();
+      }, 1200);
       return;
     }
     if (event.type === 'login') {
-      handlers.onLogin();
+      await handlers.onLogin();
+      setTimeout(() => {
+        void refreshState();
+      }, 1200);
       return;
     }
     if (event.type === 'start-sidecar') {
-      handlers.onStartSidecar();
+      await handlers.onStartSidecar();
+      setTimeout(() => {
+        void refreshState();
+      }, 1200);
+      return;
+    }
+    if (event.type === 'guided-next' && handlers.onGuidedNext) {
+      await handlers.onGuidedNext(String(event.command || ''));
+      setTimeout(() => {
+        void refreshState();
+      }, 300);
     }
   });
   return panel;

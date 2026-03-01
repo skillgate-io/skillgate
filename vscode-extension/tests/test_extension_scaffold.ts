@@ -32,5 +32,16 @@ describe('extension scaffold', () => {
     ).commands.map((entry) => entry.command);
     expect(commands).toContain('skillgate.openOnboarding');
     expect(commands).toContain('skillgate.preflight.retry');
+    expect(commands).toContain('skillgate.initPolicyFile');
+    expect(commands).toContain('skillgate.scanWorkspace');
+    expect(commands).toContain('skillgate.submitScanReport');
+    expect(commands).toContain('skillgate.openApprovalCenter');
+    expect(commands).toContain('skillgate.signApproval');
+    expect(commands).toContain('skillgate.verifyApproval');
+  });
+
+  it('includes guided walkthrough metadata', () => {
+    const walkthroughs = (pkg.contributes as { walkthroughs?: Array<{ id: string }> }).walkthroughs ?? [];
+    expect(walkthroughs.some((entry) => entry.id === 'skillgate.getStarted')).toBe(true);
   });
 });

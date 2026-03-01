@@ -102,6 +102,15 @@ def run_command(
             "[red]Error:[/red] Missing wrapped command. Example: skillgate run -- codex ..."
         )
         raise typer.Exit(code=3)
+    if wrapped_command == ["--sidecar"]:
+        from skillgate.cli.commands.sidecar import start_sidecar_server
+
+        console.print(
+            "[yellow]`skillgate run --sidecar` is deprecated.[/] "
+            "Use [cyan]skillgate sidecar start[/cyan]."
+        )
+        start_sidecar_server()
+        return
 
     actor = os.environ.get("USER", "unknown")
     parent_session_id = _resolve_parent_session()

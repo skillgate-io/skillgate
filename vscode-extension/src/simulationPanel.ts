@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { SkillgateClient } from './skillgateClient';
+import { DecisionRecord } from './types';
 
 const DEFAULT_INVOCATION = {
   invocation_id: 'inv-1',
@@ -60,7 +61,10 @@ function panelHtml(): string {
 </html>`;
 }
 
-export function openSimulationPanel(client: SkillgateClient): void {
+export function openSimulationPanel(
+  client: SkillgateClient,
+  opts?: { onDecision?: (record: DecisionRecord) => void },
+): void {
   const panel = vscode.window.createWebviewPanel(
     'skillgate-simulation',
     'SkillGate Simulation',
@@ -75,6 +79,7 @@ export function openSimulationPanel(client: SkillgateClient): void {
     try {
       const payload = JSON.parse(String(event.payload)) as Record<string, unknown>;
       const result = await client.simulateInvocation(payload);
+      opts?.onDecision?.(result);
       panel.webview.postMessage(JSON.stringify(result, null, 2));
     } catch (error) {
       panel.webview.postMessage(`Simulation failed: ${String(error)}`);

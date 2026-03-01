@@ -375,41 +375,104 @@ def logout_command() -> None:
 
 
 @auth_app.command("whoami")
-def whoami_command() -> None:
+def whoami_command(
+    json_output: bool = typer.Option(False, "--json", help="Emit JSON output."),
+) -> None:
     """Show current authenticated user."""
-    # Check env var first
-    if env_key := os.environ.get("SKILLGATE_API_KEY"):
-        console.print("[dim]Auth via: SKILLGATE_API_KEY environment variable[/]")
-        try:
-            tier = validate_api_key(env_key)
-            console.print(f"[green]Tier:[/] {tier.value}")
-        except Exception:
-            console.print("[red]Invalid API key[/]")
+    payload = _auth_identity_payload()
+    if json_output:
+        typer.echo(json.dumps(payload, sort_keys=True))
         return
 
-    # Check stored credentials
-    creds = _load_credentials()
-    if not creds:
+    if not payload["authenticated"]:
         console.print("[yellow]Not logged in.[/]")
         console.print("[dim]Run 'skillgate auth login' to authenticate.[/]")
         raise typer.Exit(1)
 
-    email = creds.get("email", "unknown")
-    tier = creds.get("tier", "unknown")
-    auth_method = creds.get("auth_method", "unknown")
+    if payload["auth_source"] == "env":
+        console.print("[dim]Auth via: SKILLGATE_API_KEY environment variable[/]")
+        console.print(f"[green]Tier:[/] {payload['tier']}")
+        return
 
     console.print(
         Panel.fit(
             f"[bold]Authenticated User[/]\n\n"
-            f"[green]Email:[/] {email}\n"
-            f"[green]Tier:[/] {tier}\n"
-            f"[green]Auth method:[/] {auth_method}",
+            f"[green]Email:[/] {payload['email']}\n"
+            f"[green]Tier:[/] {payload['tier']}\n"
+            f"[green]Auth method:[/] {payload['auth_method']}",
             border_style="green",
         )
     )
 
 
+def _auth_identity_payload() -> dict[str, Any]:
+    """Return current authentication identity for human or JSON rendering."""
+    # Check env var first
+    if env_key := os.environ.get("SKILLGATE_API_KEY"):
+        try:
+            tier = validate_api_key(env_key)
+            return {
+                "authenticated": True,
+                "auth_source": "env",
+                "email": None,
+                "tier": tier.value,
+                "auth_method": "env_api_key",
+            }
+        except Exception:
+            return {
+                "authenticated": False,
+                "auth_source": "env",
+                "email": None,
+                "tier": "unknown",
+                "auth_method": "env_api_key",
+            }
+
+    # Check stored credentials
+    creds = _load_credentials()
+    if not creds:
+        return {
+            "authenticated": False,
+            "auth_source": "none",
+            "email": None,
+            "tier": "unknown",
+            "auth_method": "none",
+        }
+
+    email = creds.get("email", "unknown")
+    tier = creds.get("tier", "unknown")
+    auth_method = creds.get("auth_method", "unknown")
+    return {
+        "authenticated": True,
+        "auth_source": "credentials",
+        "email": email,
+        "tier": tier,
+        "auth_method": auth_method,
+    }
+
+
 @auth_app.command("status")
-def status_command() -> None:
+def status_command(
+    json_output: bool = typer.Option(False, "--json", help="Emit JSON output."),
+) -> None:
     """Show authentication status (alias for whoami)."""
-    whoami_command()
+    whoami_command(json_output=json_output)
+
+
+@auth_app.command("sidecar-token")
+def sidecar_token_command(
+    json_output: bool = typer.Option(False, "--json", help="Emit JSON output."),
+) -> None:
+    """Return active SLT token for local sidecar clients."""
+    token = SLT_STORE.load()
+    if not token:
+        if json_output:
+            typer.echo(json.dumps({"available": False}, sort_keys=True))
+        else:
+            console.print("[yellow]No active Session License Token found.[/]")
+            console.print("[dim]Run 'skillgate auth login' first.[/]")
+        raise typer.Exit(1)
+
+    if json_output:
+        typer.echo(json.dumps({"available": True, "token": token}, sort_keys=True))
+        return
+    typer.echo(token)
