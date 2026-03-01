@@ -16,12 +16,20 @@ afterEach(() => {
 
 describe('SkillgateClient license fallback', () => {
   it('returns needs-login when sidecar is offline', async () => {
+    vi.spyOn(SkillgateClient.prototype, 'runCliJson').mockResolvedValue({
+      authenticated: false,
+      tier: 'free',
+    });
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('ECONNREFUSED')));
     const state = await client().getLicenseState();
     expect(state.mode).toBe('needs-login');
   });
 
   it('returns needs-login when sidecar reports 401', async () => {
+    vi.spyOn(SkillgateClient.prototype, 'runCliJson').mockResolvedValue({
+      authenticated: false,
+      tier: 'free',
+    });
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({ status: 401, ok: false, json: async () => ({}) }),
@@ -31,6 +39,10 @@ describe('SkillgateClient license fallback', () => {
   });
 
   it('returns licensed when sidecar entitlements are available', async () => {
+    vi.spyOn(SkillgateClient.prototype, 'runCliJson').mockResolvedValue({
+      authenticated: false,
+      tier: 'free',
+    });
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
@@ -42,6 +54,20 @@ describe('SkillgateClient license fallback', () => {
     const state = await client().getLicenseState();
     expect(state.mode).toBe('licensed');
     expect(state.tier).toBe('pro');
+  });
+
+  it('returns licensed from CLI auth state without sidecar entitlements call', async () => {
+    const authSpy = vi.spyOn(SkillgateClient.prototype, 'runCliJson').mockResolvedValue({
+      authenticated: true,
+      tier: 'team',
+    });
+    const fetchSpy = vi.fn();
+    vi.stubGlobal('fetch', fetchSpy);
+    const state = await client().getLicenseState();
+    expect(state.mode).toBe('licensed');
+    expect(state.tier).toBe('team');
+    expect(authSpy).toHaveBeenCalledWith(['auth', 'whoami', '--json']);
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 });
 

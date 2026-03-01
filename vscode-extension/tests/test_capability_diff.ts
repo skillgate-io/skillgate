@@ -22,4 +22,13 @@ describe('capability diff', () => {
     expect(changes[0]?.change).toBe('removed');
     expect(changes[0]?.severity).toBe('info');
   });
+
+  it('detects capability changes in permissions-based policy files', () => {
+    const base = 'version: "1"\npermissions:\n  allow_shell: false\n  allow_network: false\n';
+    const next =
+      'version: "1"\npermissions:\n  allow_shell: true\n  allow_network: true\n  allowed_domains: []\n';
+    const changes = detectCapabilityDiff(base, next);
+    expect(changes.some((item) => item.capability === 'shell.exec')).toBe(true);
+    expect(changes.some((item) => item.capability === 'net.outbound')).toBe(true);
+  });
 });

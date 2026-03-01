@@ -3,9 +3,17 @@ import { LintIssue } from './types';
 const ALLOWED_TOP_LEVEL = new Set([
   'version',
   'name',
+  'description',
+  'thresholds',
+  'permissions',
   'trust_tiers',
   'capability_budgets',
   'rules',
+  'enforcement',
+  'runtime',
+  'fleet',
+  'confidence',
+  'artifact_origins',
   'approval_requirements',
   'exceptions',
 ]);

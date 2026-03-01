@@ -6,10 +6,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>12</LangVersion>
     <PackageId>SkillGate.Client</PackageId>
-    <Version>0.1.0</Version>
+    <Version>1.2.1</Version>
+    <Authors>SkillGate</Authors>
     <Description>C# HTTP client for the SkillGate runtime sidecar</Description>
     <PackageTags>skillgate;security;ai;agent;governance</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/skillgate-io/skillgate</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="\" Link="LICENSE" />
+  </ItemGroup>
 
 </Project>

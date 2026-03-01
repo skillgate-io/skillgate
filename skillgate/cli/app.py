@@ -83,6 +83,7 @@ from skillgate.cli.commands.retroscan import retroscan_command
 from skillgate.cli.commands.rules_cmd import rules_command
 from skillgate.cli.commands.run import run_command
 from skillgate.cli.commands.scan import scan_command
+from skillgate.cli.commands.sidecar import sidecar_start_command
 from skillgate.cli.commands.simulate import simulate_command
 from skillgate.cli.commands.submit_scan import submit_scan_command
 from skillgate.cli.commands.verify import verify_command
@@ -107,6 +108,7 @@ COMMAND_INDEX: dict[str, list[tuple[str, str]]] = {
     ],
     "Runtime + Integrations": [
         ("run", "Run an agent CLI through SkillGate runtime gateway."),
+        ("sidecar", "Start the local SkillGate runtime sidecar."),
         ("codex", "Codex CLI bridge wrapper with governance preflight checks."),
         ("claude", "Claude Code governance commands."),
         ("mcp", "MCP gateway governance commands."),
@@ -174,6 +176,9 @@ gateway_app.command(
     "scan-output",
     help="Tool output poisoning scan for native hooks",
 )(gateway_scan_output_command)
+
+sidecar_app = typer.Typer(help="Runtime sidecar lifecycle commands")
+sidecar_app.command("start", help="Start local sidecar HTTP service")(sidecar_start_command)
 
 bom_app = typer.Typer(help="AI-BOM commands for runtime gateway enforcement")
 bom_app.command("import", help="Import CycloneDX BOM into SkillGate BOM store")(bom_import_command)
@@ -346,6 +351,7 @@ app.add_typer(keys_app, name="keys")
 app.add_typer(mcp_app, name="mcp")
 app.add_typer(report_app, name="report")
 app.add_typer(reputation_app, name="reputation")
+app.add_typer(sidecar_app, name="sidecar")
 
 app.command(
     "codex",

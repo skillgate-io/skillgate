@@ -4,6 +4,11 @@ export function buildPrChecklist(changes: CapabilityChange[]): string {
   const lines: string[] = [
     '# SkillGate PR Checklist',
     '',
+    '## How to use this checklist',
+    '- [ ] Paste this checklist into your PR description.',
+    '- [ ] Complete all applicable items before merge.',
+    '- [ ] Use Approval Center only when simulation/policy requires approval.',
+    '',
     '## Capability changes',
   ];
 

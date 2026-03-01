@@ -47,10 +47,46 @@ export interface DecisionRecord {
   license_mode: string;
 }
 
+export interface ApprovalRequestRecord {
+  approval_id: string;
+  status: string;
+  decision_code: string;
+  invocation_id: string;
+  reasons: string[];
+  created_at: string;
+  path: string;
+  skill_id?: string;
+  skill_hash?: string;
+  env?: string;
+  reviewers?: string[];
+  approval_file?: string;
+  signed_at?: string;
+  verified_at?: string;
+  verify_code?: string;
+  verify_reason?: string;
+}
+
+export interface GuidedFlowStep {
+  id: 'init-policy' | 'simulate' | 'checklist' | 'approval-center';
+  label: string;
+  done: boolean;
+  command: string;
+}
+
+export interface GuidedFlowState {
+  steps: GuidedFlowStep[];
+  nextActionCommand?: string;
+  nextActionLabel?: string;
+  completed: boolean;
+}
+
 export interface PreflightState {
   cliInstalled: boolean;
   authenticated: boolean;
   sidecarRunning: boolean;
+  authSummary?: string;
+  sidecarUrl?: string;
+  guided?: GuidedFlowState;
   nextStep: 'install-cli' | 'login' | 'start-sidecar' | 'ready';
   cliInstallHint: string;
   checkedAt: string;
