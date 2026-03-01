@@ -60,8 +60,7 @@ def _default_steps(skip_web_ui: bool) -> list[GateStep]:
         ),
         GateStep(
             "security",
-            "./venv/bin/python -m pip freeze --exclude-editable | "
-            "grep -Ev ' @ (file|https?)://' > /tmp/requirements-audit.txt && "
+            "./venv/bin/python -m pip freeze --exclude-editable > /tmp/requirements-audit.txt && "
             "./venv/bin/pip-audit --strict --disable-pip --no-deps "
             "-r /tmp/requirements-audit.txt && "
             "(./venv/bin/detect-secrets scan --baseline .secrets.baseline || "
